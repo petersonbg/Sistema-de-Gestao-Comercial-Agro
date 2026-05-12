@@ -1,7 +1,7 @@
 """URLs principais do projeto sistema_gestao."""
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
-from django.urls import path
+from django.urls import include, path
 
 from core.forms import BootstrapAuthenticationForm
 from core.views import dashboard, logout_view
@@ -19,4 +19,6 @@ urlpatterns = [
         name="login",
     ),
     path("logout/", logout_view, name="logout"),
+    path("clientes/", include("clientes.urls")),
+    path("fornecedores/", include("fornecedores.urls")),
 ]

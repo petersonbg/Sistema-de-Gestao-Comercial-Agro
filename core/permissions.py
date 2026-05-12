@@ -10,7 +10,7 @@ PERFIL_VENDEDOR = "vendedor"
 
 def usuario_tem_perfil(user, perfis):
     """Verifica se o usuário autenticado possui um dos perfis informados."""
-    return user.is_authenticated and getattr(user, "perfil", None) in perfis
+    return user.is_authenticated and (user.is_superuser or getattr(user, "perfil", None) in perfis)
 
 
 def perfil_required(*perfis):

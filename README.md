@@ -134,6 +134,8 @@ CSRF_TRUSTED_ORIGINS=https://seudominio.com.br
 - `/` — dashboard protegido por login;
 - `/login/` — tela de login;
 - `/logout/` — saída do sistema;
+- `/clientes/` — CRUD de clientes da empresa do usuário;
+- `/fornecedores/` — CRUD de fornecedores da empresa do usuário;
 - `/admin/` — administração padrão do Django.
 
 
@@ -148,6 +150,8 @@ Perfis iniciais:
 - **Vendedor**: acesso aos módulos comerciais de clientes, produtos, vendas e orçamentos, sem acesso às configurações administrativas sensíveis.
 
 O dashboard exibe indicadores simples de clientes, produtos ativos, estoque baixo, vendas do dia e orçamentos abertos.
+
+O CRUD de clientes e fornecedores usa busca, paginação, detalhes, cadastro, edição e inativação lógica, sempre restringindo dados à empresa vinculada ao usuário logado.
 
 ## Models iniciais
 

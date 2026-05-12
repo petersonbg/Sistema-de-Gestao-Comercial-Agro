@@ -19,13 +19,13 @@
         {% if user.is_authenticated %}
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <li class="nav-item"><a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a></li>
-            <li class="nav-item"><a class="nav-link" href="#">Clientes</a></li>
+            <li class="nav-item"><a class="nav-link" href="{% url 'clientes:list' %}">Clientes</a></li>
             <li class="nav-item"><a class="nav-link" href="#">Produtos</a></li>
             <li class="nav-item"><a class="nav-link" href="#">Vendas</a></li>
             <li class="nav-item"><a class="nav-link" href="#">Orçamentos</a></li>
             {% if user.perfil == 'administrador' or user.is_superuser %}
               <li class="nav-item"><a class="nav-link" href="#">Empresas</a></li>
-              <li class="nav-item"><a class="nav-link" href="#">Fornecedores</a></li>
+              <li class="nav-item"><a class="nav-link" href="{% url 'fornecedores:list' %}">Fornecedores</a></li>
               <li class="nav-item"><a class="nav-link" href="#">Estoque</a></li>
               <li class="nav-item"><a class="nav-link" href="#">Financeiro</a></li>
               <li class="nav-item"><a class="nav-link" href="#">Relatórios</a></li>

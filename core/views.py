@@ -4,6 +4,7 @@ from django.contrib.auth import logout as django_logout
 from django.contrib.auth.decorators import login_required
 from django.db.models import F
 from django.shortcuts import render
+from django.urls import reverse
 from django.utils import timezone
 
 from clientes.models import Cliente
@@ -74,7 +75,7 @@ def dashboard(request):
         {
             "name": "Clientes",
             "description": "Cadastro e histórico de clientes.",
-            "url": "#",
+            "url": "clientes:list",
             "profiles": perfil_comercial,
         },
         {
@@ -104,7 +105,7 @@ def dashboard(request):
         {
             "name": "Fornecedores",
             "description": "Cadastro de fornecedores e parceiros.",
-            "url": "#",
+            "url": "fornecedores:list",
             "profiles": [PERFIL_ADMINISTRADOR],
         },
         {
@@ -131,6 +132,9 @@ def dashboard(request):
         for module in modules
         if getattr(request.user, "perfil", None) in module["profiles"] or request.user.is_superuser
     ]
+    for module in modules:
+        if module["url"] != "#":
+            module["url"] = reverse(module["url"])
 
     return render(request, "dashboard.html", {"cards": cards, "modules": modules})
 
