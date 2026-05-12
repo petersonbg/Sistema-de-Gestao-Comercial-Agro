@@ -2,11 +2,13 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
+from core.admin_permissions import AdminSomenteAdministradorMixin
+
 from .models import Usuario
 
 
 @admin.register(Usuario)
-class UsuarioAdmin(UserAdmin):
+class UsuarioAdmin(AdminSomenteAdministradorMixin, UserAdmin):
     list_display = ("username", "get_full_name", "email", "empresa", "perfil", "telefone", "ativo", "is_staff")
     search_fields = ("username", "first_name", "last_name", "email", "telefone", "empresa__nome_fantasia")
     list_filter = ("perfil", "ativo", "is_staff", "is_superuser", "is_active", "empresa")

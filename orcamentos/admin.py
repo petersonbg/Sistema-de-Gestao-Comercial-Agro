@@ -1,6 +1,8 @@
 """Configuração do Django Admin para orçamentos."""
 from django.contrib import admin
 
+from core.admin_permissions import AdminComercialMixin
+
 from .models import Orcamento, OrcamentoItem
 
 
@@ -12,7 +14,7 @@ class OrcamentoItemInline(admin.TabularInline):
 
 
 @admin.register(Orcamento)
-class OrcamentoAdmin(admin.ModelAdmin):
+class OrcamentoAdmin(AdminComercialMixin, admin.ModelAdmin):
     list_display = ("id", "data", "validade", "empresa", "cliente", "usuario", "status", "subtotal", "desconto", "total")
     search_fields = (
         "=id",
@@ -35,7 +37,7 @@ class OrcamentoAdmin(admin.ModelAdmin):
 
 
 @admin.register(OrcamentoItem)
-class OrcamentoItemAdmin(admin.ModelAdmin):
+class OrcamentoItemAdmin(AdminComercialMixin, admin.ModelAdmin):
     list_display = ("orcamento", "produto", "empresa", "quantidade", "preco_unitario", "desconto", "subtotal")
     search_fields = ("=orcamento__id", "produto__nome", "produto__codigo_interno")
     list_filter = ("empresa", "produto")

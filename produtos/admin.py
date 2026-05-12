@@ -1,25 +1,27 @@
 """Configuração do Django Admin para produtos."""
 from django.contrib import admin
 
+from core.admin_permissions import AdminComercialMixin
+
 from .models import Categoria, Marca, Produto
 
 
 @admin.register(Categoria)
-class CategoriaAdmin(admin.ModelAdmin):
+class CategoriaAdmin(AdminComercialMixin, admin.ModelAdmin):
     list_display = ("nome", "empresa", "ativo")
     search_fields = ("nome", "descricao", "empresa__nome_fantasia")
     list_filter = ("empresa", "ativo")
 
 
 @admin.register(Marca)
-class MarcaAdmin(admin.ModelAdmin):
+class MarcaAdmin(AdminComercialMixin, admin.ModelAdmin):
     list_display = ("nome", "empresa", "ativo")
     search_fields = ("nome", "empresa__nome_fantasia")
     list_filter = ("empresa", "ativo")
 
 
 @admin.register(Produto)
-class ProdutoAdmin(admin.ModelAdmin):
+class ProdutoAdmin(AdminComercialMixin, admin.ModelAdmin):
     list_display = (
         "codigo_interno",
         "nome",

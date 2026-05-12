@@ -1,11 +1,13 @@
 """Configuração do Django Admin para fornecedores."""
 from django.contrib import admin
 
+from core.admin_permissions import AdminSomenteAdministradorMixin
+
 from .models import Fornecedor
 
 
 @admin.register(Fornecedor)
-class FornecedorAdmin(admin.ModelAdmin):
+class FornecedorAdmin(AdminSomenteAdministradorMixin, admin.ModelAdmin):
     list_display = ("nome", "empresa", "tipo_pessoa", "cpf_cnpj", "telefone", "email", "cidade", "ativo")
     search_fields = ("nome", "cpf_cnpj", "telefone", "email", "empresa__nome_fantasia")
     list_filter = ("empresa", "tipo_pessoa", "ativo", "estado", "cidade")

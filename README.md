@@ -137,6 +137,18 @@ CSRF_TRUSTED_ORIGINS=https://seudominio.com.br
 - `/admin/` — administração padrão do Django.
 
 
+
+## Autenticação e perfis
+
+O projeto usa a autenticação tradicional do Django com tela de login personalizada em Bootstrap, confirmação de logout e redirecionamento automático para o dashboard após login.
+
+Perfis iniciais:
+
+- **Administrador**: acesso completo aos módulos e configurações administrativas.
+- **Vendedor**: acesso aos módulos comerciais de clientes, produtos, vendas e orçamentos, sem acesso às configurações administrativas sensíveis.
+
+O dashboard exibe indicadores simples de clientes, produtos ativos, estoque baixo, vendas do dia e orçamentos abertos.
+
 ## Models iniciais
 
 A base inclui models iniciais para:

@@ -1,11 +1,13 @@
 """Configuração do Django Admin para estoque."""
 from django.contrib import admin
 
+from core.admin_permissions import AdminSomenteAdministradorMixin
+
 from .models import LoteEstoque, MovimentacaoEstoque, UnidadeIdentificada
 
 
 @admin.register(LoteEstoque)
-class LoteEstoqueAdmin(admin.ModelAdmin):
+class LoteEstoqueAdmin(AdminSomenteAdministradorMixin, admin.ModelAdmin):
     list_display = (
         "numero_lote",
         "produto",
@@ -29,7 +31,7 @@ class LoteEstoqueAdmin(admin.ModelAdmin):
 
 
 @admin.register(UnidadeIdentificada)
-class UnidadeIdentificadaAdmin(admin.ModelAdmin):
+class UnidadeIdentificadaAdmin(AdminSomenteAdministradorMixin, admin.ModelAdmin):
     list_display = (
         "produto",
         "empresa",
@@ -64,7 +66,7 @@ class UnidadeIdentificadaAdmin(admin.ModelAdmin):
 
 
 @admin.register(MovimentacaoEstoque)
-class MovimentacaoEstoqueAdmin(admin.ModelAdmin):
+class MovimentacaoEstoqueAdmin(AdminSomenteAdministradorMixin, admin.ModelAdmin):
     list_display = ("criado_em", "tipo_movimentacao", "produto", "empresa", "quantidade", "lote", "unidade_identificada", "usuario")
     search_fields = (
         "produto__nome",

@@ -1,11 +1,13 @@
 """Configuração do Django Admin para clientes."""
 from django.contrib import admin
 
+from core.admin_permissions import AdminComercialMixin
+
 from .models import Cliente
 
 
 @admin.register(Cliente)
-class ClienteAdmin(admin.ModelAdmin):
+class ClienteAdmin(AdminComercialMixin, admin.ModelAdmin):
     list_display = ("nome", "empresa", "tipo_pessoa", "cpf_cnpj", "telefone", "whatsapp", "cidade", "ativo")
     search_fields = ("nome", "cpf_cnpj", "telefone", "whatsapp", "email", "empresa__nome_fantasia")
     list_filter = ("empresa", "tipo_pessoa", "ativo", "estado", "cidade")

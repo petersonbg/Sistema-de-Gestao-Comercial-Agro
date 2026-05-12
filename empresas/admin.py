@@ -1,11 +1,13 @@
 """Configuração do Django Admin para empresas."""
 from django.contrib import admin
 
+from core.admin_permissions import AdminSomenteAdministradorMixin
+
 from .models import Empresa
 
 
 @admin.register(Empresa)
-class EmpresaAdmin(admin.ModelAdmin):
+class EmpresaAdmin(AdminSomenteAdministradorMixin, admin.ModelAdmin):
     list_display = ("nome_fantasia", "razao_social", "cnpj", "telefone", "cidade", "estado", "ativo")
     search_fields = ("nome_fantasia", "razao_social", "cnpj", "email", "telefone")
     list_filter = ("ativo", "estado", "cidade")

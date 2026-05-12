@@ -1,6 +1,8 @@
 """Configuração do Django Admin para vendas."""
 from django.contrib import admin
 
+from core.admin_permissions import AdminComercialMixin
+
 from .models import Venda, VendaItem
 
 
@@ -12,7 +14,7 @@ class VendaItemInline(admin.TabularInline):
 
 
 @admin.register(Venda)
-class VendaAdmin(admin.ModelAdmin):
+class VendaAdmin(AdminComercialMixin, admin.ModelAdmin):
     list_display = ("id", "data", "empresa", "cliente", "usuario", "forma_pagamento", "status", "subtotal", "desconto", "total")
     search_fields = (
         "=id",
@@ -36,7 +38,7 @@ class VendaAdmin(admin.ModelAdmin):
 
 
 @admin.register(VendaItem)
-class VendaItemAdmin(admin.ModelAdmin):
+class VendaItemAdmin(AdminComercialMixin, admin.ModelAdmin):
     list_display = ("venda", "produto", "empresa", "quantidade", "preco_unitario", "desconto", "subtotal", "lote", "unidade_identificada")
     search_fields = (
         "=venda__id",
