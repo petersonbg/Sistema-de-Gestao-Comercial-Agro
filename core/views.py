@@ -81,7 +81,7 @@ def dashboard(request):
         {
             "name": "Produtos",
             "description": "Adubos, peças, triciclos e itens diversos.",
-            "url": "#",
+            "url": "produtos:produto_list",
             "profiles": perfil_comercial,
         },
         {

@@ -136,6 +136,9 @@ CSRF_TRUSTED_ORIGINS=https://seudominio.com.br
 - `/logout/` — saída do sistema;
 - `/clientes/` — CRUD de clientes da empresa do usuário;
 - `/fornecedores/` — CRUD de fornecedores da empresa do usuário;
+- `/produtos/` — CRUD de produtos da empresa do usuário;
+- `/produtos/categorias/` — CRUD de categorias de produtos;
+- `/produtos/marcas/` — CRUD de marcas de produtos;
 - `/admin/` — administração padrão do Django.
 
 
@@ -151,7 +154,7 @@ Perfis iniciais:
 
 O dashboard exibe indicadores simples de clientes, produtos ativos, estoque baixo, vendas do dia e orçamentos abertos.
 
-O CRUD de clientes e fornecedores usa busca, paginação, detalhes, cadastro, edição e inativação lógica, sempre restringindo dados à empresa vinculada ao usuário logado.
+O CRUD de clientes, fornecedores, categorias, marcas e produtos usa busca, paginação, detalhes, cadastro, edição e inativação lógica, sempre restringindo dados à empresa vinculada ao usuário logado.
 
 ## Models iniciais
 

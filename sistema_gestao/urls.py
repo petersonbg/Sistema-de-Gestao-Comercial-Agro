@@ -21,4 +21,5 @@ urlpatterns = [
     path("logout/", logout_view, name="logout"),
     path("clientes/", include("clientes.urls")),
     path("fornecedores/", include("fornecedores.urls")),
+    path("produtos/", include("produtos.urls")),
 ]

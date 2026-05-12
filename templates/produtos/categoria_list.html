@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}Categorias | Sistema de Gestão Comercial Agro{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="d-flex flex-column flex-md-row justify-content-between gap-3 align-items-md-center mb-4">
+    <div>
+      <h1 class="h3 mb-1">Categorias</h1>
+      <p class="text-muted mb-0">Organize produtos por grupos comerciais.</p>
+    </div>
+    <a href="{% url 'produtos:categoria_create' %}" class="btn btn-success">Nova categoria</a>
+  </div>
+
+  <form method="get" class="card border-0 shadow-sm mb-4">
+    <div class="card-body">
+      <div class="row g-3 align-items-end">
+        <div class="col-md-7">
+          <label for="q" class="form-label">Busca</label>
+          <input type="search" class="form-control" id="q" name="q" value="{{ busca }}" placeholder="Nome ou descrição">
+        </div>
+        <div class="col-md-3">
+          <label for="status" class="form-label">Status</label>
+          <select class="form-select" id="status" name="status">
+            <option value="" {% if not status %}selected{% endif %}>Todos</option>
+            <option value="ativo" {% if status == 'ativo' %}selected{% endif %}>Ativas</option>
+            <option value="inativo" {% if status == 'inativo' %}selected{% endif %}>Inativas</option>
+          </select>
+        </div>
+        <div class="col-md-2 d-grid">
+          <button type="submit" class="btn btn-outline-success">Filtrar</button>
+        </div>
+      </div>
+    </div>
+  </form>
+
+  <div class="card border-0 shadow-sm">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>Nome</th>
+            <th>Descrição</th>
+            <th>Status</th>
+            <th class="text-end">Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for categoria in categorias %}
+            <tr>
+              <td class="fw-semibold">{{ categoria.nome }}</td>
+              <td>{{ categoria.descricao|default:"-"|truncatechars:80 }}</td>
+              <td>{% if categoria.ativo %}<span class="badge text-bg-success">Ativa</span>{% else %}<span class="badge text-bg-secondary">Inativa</span>{% endif %}</td>
+              <td class="text-end">
+                <a href="{% url 'produtos:categoria_detail' categoria.pk %}" class="btn btn-sm btn-outline-success">Detalhes</a>
+                <a href="{% url 'produtos:categoria_update' categoria.pk %}" class="btn btn-sm btn-outline-secondary">Editar</a>
+              </td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="4" class="text-center text-muted py-4">Nenhuma categoria encontrada.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  {% if is_paginated %}
+    <nav class="mt-4" aria-label="Paginação de categorias">
+      <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}<li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}&q={{ busca }}&status={{ status }}">Anterior</a></li>{% else %}<li class="page-item disabled"><span class="page-link">Anterior</span></li>{% endif %}
+        <li class="page-item active"><span class="page-link">{{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span></li>
+        {% if page_obj.has_next %}<li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}&q={{ busca }}&status={{ status }}">Próxima</a></li>{% else %}<li class="page-item disabled"><span class="page-link">Próxima</span></li>{% endif %}
+      </ul>
+    </nav>
+  {% endif %}
+</div>
+{% endblock %}
