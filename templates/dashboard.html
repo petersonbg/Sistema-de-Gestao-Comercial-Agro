@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard | Sistema de Gestão Comercial Agro{% endblock %}
+
+{% block content %}
+<div class="container">
+  <section class="hero-card p-4 p-md-5 mb-4 rounded-4 text-white">
+    <div class="row align-items-center g-4">
+      <div class="col-lg-8">
+        <p class="text-uppercase small fw-semibold mb-2 opacity-75">Servidor local • Rede interna</p>
+        <h1 class="display-6 fw-bold mb-3">Sistema de Gestão Comercial Agro</h1>
+        <p class="lead mb-0">Base inicial para administrar vendas de fertilizantes, peças mecânicas, triciclos agrícolas, ferramentas, acessórios e produtos diversos.</p>
+      </div>
+      <div class="col-lg-4">
+        <div class="bg-white bg-opacity-10 border border-light border-opacity-25 rounded-3 p-3">
+          <span class="d-block small text-uppercase opacity-75">Status</span>
+          <strong>Estrutura inicial criada</strong>
+          <p class="mb-0 small opacity-75">Pronta para receber cadastros, regras de negócio e relatórios nas próximas etapas.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="row g-3">
+    {% for module in modules %}
+      <div class="col-md-6 col-xl-4">
+        <a href="{{ module.url }}" class="module-card card h-100 text-decoration-none">
+          <div class="card-body">
+            <h2 class="h5 card-title text-success">{{ module.name }}</h2>
+            <p class="card-text text-muted mb-0">{{ module.description }}</p>
+          </div>
+        </a>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
