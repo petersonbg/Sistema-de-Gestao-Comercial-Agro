@@ -136,6 +136,19 @@ CSRF_TRUSTED_ORIGINS=https://seudominio.com.br
 - `/logout/` — saída do sistema;
 - `/admin/` — administração padrão do Django.
 
+
+## Models iniciais
+
+A base inclui models iniciais para:
+
+- empresas e usuários personalizados por empresa;
+- clientes e fornecedores;
+- categorias, marcas e cadastro único de produtos;
+- controle de estoque simples, por lote/validade e por unidade identificada;
+- vendas, itens de venda, orçamentos e itens de orçamento.
+
+O cadastro de produtos usa `tipo_controle_estoque` para separar produtos comuns, produtos com lote e validade, e unidades identificadas como triciclos, máquinas ou veículos.
+
 ## Próximas etapas sugeridas
 
 - Definir models de empresas, clientes, fornecedores e produtos;
