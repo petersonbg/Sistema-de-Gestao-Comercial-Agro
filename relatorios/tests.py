@@ -168,3 +168,15 @@ class RelatoriosBasicosTests(TestCase):
         self.assertContains(response, ">2<")
         self.assertContains(response, "R$ 100")
         self.assertNotContains(response, "Produto externo")
+
+    def test_vendedor_nao_acessa_relatorios_administrativos(self):
+        usuario_model = get_user_model()
+        vendedor = usuario_model.objects.create_user(
+            username="vendedor-relatorios",
+            password="senha",
+            empresa=self.empresa,
+            perfil=usuario_model.Perfil.VENDEDOR,
+        )
+        self.client.force_login(vendedor)
+        response = self.client.get(reverse("relatorios:index"))
+        self.assertEqual(response.status_code, 403)

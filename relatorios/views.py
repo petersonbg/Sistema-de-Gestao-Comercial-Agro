@@ -3,7 +3,7 @@ from django.db.models import F, Sum
 from django.utils import timezone
 from django.views.generic import TemplateView
 
-from core.crud_mixins import EmpresaObrigatoriaMixin
+from core.crud_mixins import EmpresaAdministradorObrigatoriaMixin
 from estoque.models import LoteEstoque
 from produtos.models import Produto
 from vendas.models import Venda, VendaItem
@@ -11,7 +11,7 @@ from vendas.models import Venda, VendaItem
 from .forms import PeriodoForm
 
 
-class RelatorioBaseView(EmpresaObrigatoriaMixin, TemplateView):
+class RelatorioBaseView(EmpresaAdministradorObrigatoriaMixin, TemplateView):
     """Base para relatórios restritos à empresa do usuário logado."""
 
     titulo = "Relatórios"
