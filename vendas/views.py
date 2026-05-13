@@ -12,6 +12,7 @@ from django.views import View
 from django.views.generic import DetailView
 
 from core.crud_mixins import EmpresaAdministradorObrigatoriaMixin, EmpresaObrigatoriaMixin
+from core.pdf import get_empresa_logo_url, render_pdf_response
 from estoque.models import LoteEstoque, MovimentacaoEstoque, UnidadeIdentificada
 from produtos.models import Produto
 
@@ -412,6 +413,33 @@ class VendaConfirmacaoView(EmpresaObrigatoriaMixin, DetailView):
         context = super().get_context_data(**kwargs)
         context["cancelar_form"] = CancelarVendaForm()
         return context
+
+
+class VendaReciboPdfView(EmpresaObrigatoriaMixin, DetailView):
+    """Gera recibo de venda em PDF para abertura inline no navegador."""
+
+    model = Venda
+
+    def get_queryset(self):
+        return Venda.objects.filter(empresa=self.get_empresa()).select_related(
+            "empresa",
+            "cliente",
+            "usuario",
+        ).prefetch_related("itens__produto")
+
+    def get(self, request, *args, **kwargs):
+        venda = self.get_object()
+        context = {
+            "venda": venda,
+            "empresa": venda.empresa,
+            "logo_url": get_empresa_logo_url(venda.empresa),
+        }
+        return render_pdf_response(
+            request,
+            "vendas/pdf/recibo_venda.html",
+            context,
+            f"recibo-venda-{venda.pk}.pdf",
+        )
 
 
 class VendaCancelarView(EmpresaAdministradorObrigatoriaMixin, View):

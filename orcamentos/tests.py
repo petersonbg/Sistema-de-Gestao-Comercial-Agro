@@ -1,5 +1,6 @@
 """Testes do fluxo de orçamentos."""
 from decimal import Decimal
+from unittest.mock import patch
 
 from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
@@ -16,10 +17,24 @@ from vendas.models import Venda
 from .models import Orcamento, OrcamentoItem
 
 
+class FakeHTML:
+    """Substituto de WeasyPrint para testar geração da resposta PDF."""
+
+    rendered_strings = []
+
+    def __init__(self, string, base_url):
+        self.rendered_strings.append(string)
+        self.base_url = base_url
+
+    def write_pdf(self):
+        return b"%PDF-1.4\norcamento"
+
+
 class OrcamentoFluxoTests(TestCase):
     """Cobre criação, descontos e conversão de orçamentos."""
 
     def setUp(self):
+        FakeHTML.rendered_strings = []
         self.empresa = Empresa.objects.create(
             nome_fantasia="Agro Teste",
             razao_social="Agro Teste Ltda",
@@ -144,3 +159,25 @@ class OrcamentoFluxoTests(TestCase):
         self.assertEqual(orcamento.status, Orcamento.Status.ABERTO)
         self.assertEqual(self.produto.estoque_atual, Decimal("10.000"))
         self.assertEqual(Venda.objects.count(), 0)
+
+
+    @patch("core.pdf.get_weasy_html", return_value=FakeHTML)
+    def test_pdf_de_orcamento_abre_inline(self, _html):
+        """PDF do orçamento retorna inline com cliente, status, validade e totais."""
+        self.post_orcamento(desconto_item="1.00", desconto_total="2.00")
+        orcamento = Orcamento.objects.get()
+
+        response = self.cliente.get(reverse("orcamentos:pdf", kwargs={"pk": orcamento.pk}))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "application/pdf")
+        self.assertIn("inline", response["Content-Disposition"])
+        self.assertIn("orcamento-", response["Content-Disposition"])
+        self.assertTrue(response.content.startswith(b"%PDF"))
+        html = FakeHTML.rendered_strings[-1]
+        self.assertIn("Orçamento", html)
+        self.assertIn("Cliente Teste", html)
+        self.assertIn("Produto simples", html)
+        self.assertIn("Validade", html)
+        self.assertIn("Aberto", html)
+        self.assertIn("Total final", html)

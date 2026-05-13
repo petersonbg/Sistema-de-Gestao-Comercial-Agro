@@ -11,6 +11,7 @@ from django.views import View
 from django.views.generic import CreateView, DetailView, ListView
 
 from core.crud_mixins import EmpresaObrigatoriaMixin
+from core.pdf import get_empresa_logo_url, render_pdf_response
 from estoque.models import LoteEstoque, MovimentacaoEstoque, UnidadeIdentificada
 from produtos.models import Produto
 from vendas.models import Venda, VendaItem
@@ -176,6 +177,31 @@ class OrcamentoDetailView(OrcamentoQuerysetMixin, DetailView):
         context["converter_form"] = ConverterOrcamentoForm()
         context["pode_autorizar_vencido"] = self.usuario_eh_administrador(self.request.user)
         return context
+
+
+class OrcamentoPdfView(OrcamentoQuerysetMixin, DetailView):
+    """Gera a visualização do orçamento em PDF para abertura inline no navegador."""
+
+    template_name = "orcamentos/pdf/orcamento.html"
+    context_object_name = "orcamento"
+
+    def get_queryset(self):
+        return super().get_queryset().select_related("empresa", "cliente", "usuario").prefetch_related("itens__produto")
+
+    def get(self, request, *args, **kwargs):
+        orcamento = self.get_object()
+        context = {
+            "orcamento": orcamento,
+            "empresa": orcamento.empresa,
+            "cliente": orcamento.cliente,
+            "logo_url": get_empresa_logo_url(orcamento.empresa),
+        }
+        return render_pdf_response(
+            request,
+            "orcamentos/pdf/orcamento.html",
+            context,
+            f"orcamento-{orcamento.pk}.pdf",
+        )
 
 
 class OrcamentoCancelarView(OrcamentoQuerysetMixin, View):

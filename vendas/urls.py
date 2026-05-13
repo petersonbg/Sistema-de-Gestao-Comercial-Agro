@@ -1,12 +1,13 @@
 """URLs do app vendas."""
 from django.urls import path
 
-from .views import VendaBalcaoView, VendaCancelarView, VendaConfirmacaoView
+from .views import VendaBalcaoView, VendaCancelarView, VendaConfirmacaoView, VendaReciboPdfView
 
 app_name = "vendas"
 
 urlpatterns = [
     path("balcao/", VendaBalcaoView.as_view(), name="balcao"),
     path("<int:pk>/confirmacao/", VendaConfirmacaoView.as_view(), name="confirmacao"),
+    path("<int:pk>/recibo.pdf", VendaReciboPdfView.as_view(), name="recibo_pdf"),
     path("<int:pk>/cancelar/", VendaCancelarView.as_view(), name="cancelar"),
 ]
