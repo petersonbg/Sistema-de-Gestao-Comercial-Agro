@@ -26,7 +26,7 @@
             {% if user.perfil == 'administrador' or user.is_superuser %}
               <li class="nav-item"><a class="nav-link" href="#">Empresas</a></li>
               <li class="nav-item"><a class="nav-link" href="{% url 'fornecedores:list' %}">Fornecedores</a></li>
-              <li class="nav-item"><a class="nav-link" href="#">Estoque</a></li>
+              <li class="nav-item"><a class="nav-link" href="{% url 'estoque:entrada' %}">Estoque</a></li>
               <li class="nav-item"><a class="nav-link" href="#">Financeiro</a></li>
               <li class="nav-item"><a class="nav-link" href="#">Relatórios</a></li>
               {% if user.is_staff %}

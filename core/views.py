@@ -110,8 +110,8 @@ def dashboard(request):
         },
         {
             "name": "Estoque",
-            "description": "Movimentações e disponibilidade de produtos.",
-            "url": "#",
+            "description": "Entradas, movimentações e disponibilidade de produtos.",
+            "url": "estoque:entrada",
             "profiles": [PERFIL_ADMINISTRADOR],
         },
         {
