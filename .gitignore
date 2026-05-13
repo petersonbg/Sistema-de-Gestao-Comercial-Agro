@@ -12,6 +12,7 @@ env/
 *.sqlite3
 media/
 staticfiles/
+backups/
 
 # Ambiente
 .env
