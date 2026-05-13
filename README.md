@@ -140,6 +140,7 @@ CSRF_TRUSTED_ORIGINS=https://seudominio.com.br
 - `/produtos/categorias/` — CRUD de categorias de produtos;
 - `/produtos/marcas/` — CRUD de marcas de produtos;
 - `/estoque/entradas/nova/` — entrada de estoque por controle simples, lote ou serial;
+- `/vendas/balcao/` — venda simples estilo balcão com baixa automática de estoque;
 - `/admin/` — administração padrão do Django.
 
 
@@ -155,7 +156,7 @@ Perfis iniciais:
 
 O dashboard exibe indicadores simples de clientes, produtos ativos, estoque baixo, vendas do dia e orçamentos abertos.
 
-O CRUD de clientes, fornecedores, categorias, marcas e produtos usa busca, paginação, detalhes, cadastro, edição e inativação lógica, sempre restringindo dados à empresa vinculada ao usuário logado. O módulo de estoque registra entradas conforme o controle do produto e atualiza o saldo com movimentação vinculada.
+O CRUD de clientes, fornecedores, categorias, marcas e produtos usa busca, paginação, detalhes, cadastro, edição e inativação lógica, sempre restringindo dados à empresa vinculada ao usuário logado. O módulo de estoque registra entradas conforme o controle do produto e atualiza o saldo com movimentação vinculada. O módulo de venda balcão finaliza vendas em transação atômica, aplica descontos e baixa estoque por controle simples, lote FEFO ou unidade serial.
 
 ## Models iniciais
 

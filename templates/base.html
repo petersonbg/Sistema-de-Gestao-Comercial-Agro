@@ -21,7 +21,7 @@
             <li class="nav-item"><a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a></li>
             <li class="nav-item"><a class="nav-link" href="{% url 'clientes:list' %}">Clientes</a></li>
             <li class="nav-item"><a class="nav-link" href="{% url 'produtos:produto_list' %}">Produtos</a></li>
-            <li class="nav-item"><a class="nav-link" href="#">Vendas</a></li>
+            <li class="nav-item"><a class="nav-link" href="{% url 'vendas:balcao' %}">Vendas</a></li>
             <li class="nav-item"><a class="nav-link" href="#">Orçamentos</a></li>
             {% if user.perfil == 'administrador' or user.is_superuser %}
               <li class="nav-item"><a class="nav-link" href="#">Empresas</a></li>

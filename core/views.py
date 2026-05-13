@@ -86,8 +86,8 @@ def dashboard(request):
         },
         {
             "name": "Vendas",
-            "description": "Pedidos, vendas e emissão futura de documentos.",
-            "url": "#",
+            "description": "Venda balcão com baixa automática de estoque.",
+            "url": "vendas:balcao",
             "profiles": perfil_comercial,
         },
         {
