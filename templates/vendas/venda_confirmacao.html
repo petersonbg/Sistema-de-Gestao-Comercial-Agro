@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}Venda #{{ venda.pk }} finalizada | Sistema de Gestão Comercial Agro{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="d-flex flex-column flex-md-row justify-content-between gap-3 align-items-md-center mb-4">
+    <div>
+      <span class="badge text-bg-success mb-2">Venda finalizada</span>
+      <h1 class="h3 mb-1">Venda #{{ venda.pk }}</h1>
+      <p class="text-muted mb-0">Estoque baixado e movimentações registradas.</p>
+    </div>
+    <div class="d-flex gap-2">
+      <a href="{% url 'vendas:balcao' %}" class="btn btn-success">Nova venda</a>
+      <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">Dashboard</a>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-lg-8">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white"><strong>Itens vendidos</strong></div>
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+              <tr>
+                <th>Produto</th>
+                <th>Controle</th>
+                <th class="text-end">Qtd.</th>
+                <th class="text-end">Preço</th>
+                <th class="text-end">Desc.</th>
+                <th class="text-end">Subtotal</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in venda.itens.all %}
+                <tr>
+                  <td>
+                    <strong>{{ item.produto.nome }}</strong><br>
+                    <span class="text-muted small">
+                      {{ item.produto.codigo_interno }}
+                      {% if item.lote %} • Lote {{ item.lote.numero_lote }}{% endif %}
+                      {% if item.unidade_identificada %} • {{ item.unidade_identificada }}{% endif %}
+                    </span>
+                  </td>
+                  <td>{{ item.produto.get_tipo_controle_estoque_display }}</td>
+                  <td class="text-end">{{ item.quantidade }}</td>
+                  <td class="text-end">R$ {{ item.preco_unitario }}</td>
+                  <td class="text-end">R$ {{ item.desconto }}</td>
+                  <td class="text-end">R$ {{ item.subtotal }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white"><strong>Resumo</strong></div>
+        <div class="card-body">
+          <dl class="row mb-0">
+            <dt class="col-6">Cliente</dt><dd class="col-6 text-end">{{ venda.cliente|default:"Consumidor Final" }}</dd>
+            <dt class="col-6">Vendedor</dt><dd class="col-6 text-end">{{ venda.usuario }}</dd>
+            <dt class="col-6">Pagamento</dt><dd class="col-6 text-end">{{ venda.get_forma_pagamento_display }}</dd>
+            <dt class="col-6">Subtotal</dt><dd class="col-6 text-end">R$ {{ venda.subtotal }}</dd>
+            <dt class="col-6">Desconto total</dt><dd class="col-6 text-end">R$ {{ venda.desconto }}</dd>
+            <dt class="col-6">Total</dt><dd class="col-6 text-end fw-bold">R$ {{ venda.total }}</dd>
+          </dl>
+          {% if venda.observacoes %}
+            <hr>
+            <p class="small text-muted mb-0">{{ venda.observacoes|linebreaksbr }}</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
