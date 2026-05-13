@@ -115,13 +115,108 @@ static/js/           # JavaScript simples
     - No próprio servidor: <http://127.0.0.1:8000/>
     - Em outro computador da mesma rede: `http://IP_DO_SERVIDOR:8000/`
 
-## Configuração para rede interna
+## Configuração para rede local interna
 
-Para acessar de outros computadores da rede, inclua o IP ou nome do servidor em `ALLOWED_HOSTS` no arquivo `.env`:
+O uso inicial recomendado é manter o sistema rodando em um computador da empresa, chamado aqui de **computador servidor**, e permitir que outros computadores e celulares da mesma rede acessem pelo navegador.
+
+> Esta seção cobre somente acesso na rede local da empresa. Não configure acesso remoto externo pela internet nesta etapa.
+
+### 1. Descobrir o IP local do computador servidor
+
+No **Windows**, abra o Prompt de Comando ou PowerShell no computador servidor e execute:
+
+```powershell
+ipconfig
+```
+
+Procure pelo adaptador de rede em uso, normalmente **Adaptador Ethernet** ou **Adaptador de Rede sem Fio Wi-Fi**, e anote o valor de **Endereço IPv4**. Exemplo:
+
+```text
+Endereço IPv4 . . . . . . . . . . . . . . : 192.168.0.10
+```
+
+No **Linux**, execute:
+
+```bash
+hostname -I
+```
+
+ou:
+
+```bash
+ip addr
+```
+
+Use o IP da interface conectada à rede interna, por exemplo `192.168.0.10`.
+
+### 2. Configurar ALLOWED_HOSTS no `.env`
+
+Para o Django aceitar conexões feitas por outros dispositivos da rede, inclua o IP local do servidor em `ALLOWED_HOSTS` no arquivo `.env`:
 
 ```env
 ALLOWED_HOSTS=127.0.0.1,localhost,192.168.0.10
 ```
+
+Substitua `192.168.0.10` pelo IP local real do computador servidor. Se a empresa usar um nome de máquina na rede, ele também pode ser incluído:
+
+```env
+ALLOWED_HOSTS=127.0.0.1,localhost,192.168.0.10,servidor-agro
+```
+
+### 3. Rodar o Django acessível na rede local
+
+No computador servidor, com o ambiente virtual ativo e dentro da pasta do projeto, execute:
+
+```bash
+python manage.py runserver 0.0.0.0:8000
+```
+
+O endereço `0.0.0.0` faz o servidor escutar em todas as interfaces de rede do computador, permitindo acesso de outros dispositivos da mesma rede.
+
+### 4. Acessar de outro computador ou celular
+
+Em outro computador, notebook, tablet ou celular conectado à mesma rede Wi-Fi/cabeada, abra o navegador e acesse:
+
+```text
+http://IP_DO_SERVIDOR:8000/
+```
+
+Exemplo:
+
+```text
+http://192.168.0.10:8000/
+```
+
+Se aparecer erro de host não permitido, revise o `ALLOWED_HOSTS` no `.env` e reinicie o servidor Django.
+
+### 5. Cuidados com firewall do Windows
+
+No Windows, o firewall pode bloquear conexões na porta `8000`. Se outros dispositivos não conseguirem acessar:
+
+1. Abra **Segurança do Windows**.
+2. Acesse **Firewall e proteção de rede**.
+3. Clique em **Permitir um aplicativo pelo firewall** ou crie uma **Regra de Entrada**.
+4. Permita o Python/Django ou libere a porta TCP `8000` somente para redes privadas.
+5. Evite liberar a porta para redes públicas.
+
+Também verifique se a rede atual do Windows está marcada como **Rede privada**, e não como **Rede pública**, para facilitar o acesso interno controlado.
+
+### 6. Cuidados com antivírus e firewalls de terceiros
+
+Antivírus, suítes de segurança e firewalls de terceiros podem bloquear o Python, o PostgreSQL ou a porta `8000`. Caso o acesso falhe mesmo com `ALLOWED_HOSTS` correto:
+
+- crie exceção para o executável do Python usado no ambiente virtual;
+- crie exceção para a porta TCP `8000` na rede privada;
+- confirme que o PostgreSQL local continua acessível pelo sistema;
+- evite desativar completamente o antivírus/firewall como solução permanente.
+
+### 7. Recomendações operacionais para o servidor local
+
+- Configure um **IP fixo local** para o computador servidor, preferencialmente por reserva DHCP no roteador. Isso evita que o endereço mude e que os atalhos dos usuários parem de funcionar.
+- Use um **no-break** no computador servidor e no roteador/switch principal para reduzir risco de desligamento inesperado e corrupção de dados.
+- Faça **backup diário** do banco PostgreSQL e da pasta `media/` usando a rotina descrita em [Rotina recomendada de backup](#rotina-recomendada-de-backup).
+- Mantenha o computador servidor ligado durante o expediente e evite reinicializações sem avisar os usuários.
+- Não exponha a porta `8000` diretamente para a internet. Acesso remoto externo deve ser planejado separadamente, com HTTPS, domínio, autenticação adequada e regras de segurança.
 
 Se futuramente houver acesso remoto com domínio e HTTPS, também configure `CSRF_TRUSTED_ORIGINS`:
 
