@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}{{ fornecedor.nome }} | Fornecedores{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="d-flex flex-column flex-md-row justify-content-between gap-3 align-items-md-center mb-4">
+    <div>
+      <h1 class="h3 mb-1">{{ fornecedor.nome }}</h1>
+      <p class="text-muted mb-0">Detalhes do fornecedor e histórico de entradas futuro.</p>
+    </div>
+    <div class="d-flex gap-2">
+      <a href="{% url 'fornecedores:list' %}" class="btn btn-outline-secondary">Voltar</a>
+      <a href="{% url 'fornecedores:update' fornecedor.pk %}" class="btn btn-success">Editar</a>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-lg-8">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+          <strong>Dados principais</strong>
+          {% if fornecedor.ativo %}<span class="badge text-bg-success">Ativo</span>{% else %}<span class="badge text-bg-secondary">Inativo</span>{% endif %}
+        </div>
+        <div class="card-body">
+          <dl class="row mb-0">
+            <dt class="col-sm-4">Tipo de pessoa</dt><dd class="col-sm-8">{{ fornecedor.get_tipo_pessoa_display }}</dd>
+            <dt class="col-sm-4">CPF/CNPJ</dt><dd class="col-sm-8">{{ fornecedor.cpf_cnpj|default:"-" }}</dd>
+            <dt class="col-sm-4">Telefone</dt><dd class="col-sm-8">{{ fornecedor.telefone|default:"-" }}</dd>
+            <dt class="col-sm-4">E-mail</dt><dd class="col-sm-8">{{ fornecedor.email|default:"-" }}</dd>
+            <dt class="col-sm-4">Endereço</dt><dd class="col-sm-8">{{ fornecedor.endereco|default:"-" }}</dd>
+            <dt class="col-sm-4">Cidade/UF</dt><dd class="col-sm-8">{{ fornecedor.cidade|default:"-" }}{% if fornecedor.estado %}/{{ fornecedor.estado }}{% endif %}</dd>
+            <dt class="col-sm-4">CEP</dt><dd class="col-sm-8">{{ fornecedor.cep|default:"-" }}</dd>
+            <dt class="col-sm-4">Observações</dt><dd class="col-sm-8">{{ fornecedor.observacoes|linebreaksbr|default:"-" }}</dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-4">
+      <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header bg-white"><strong>Ações</strong></div>
+        <div class="card-body">
+          {% if fornecedor.ativo %}
+            <form method="post" action="{% url 'fornecedores:inactivate' fornecedor.pk %}">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-outline-danger w-100">Inativar fornecedor</button>
+            </form>
+          {% else %}
+            <p class="text-muted mb-0">Este fornecedor está inativo.</p>
+          {% endif %}
+        </div>
+      </div>
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white"><strong>Histórico de entradas</strong></div>
+        <div class="card-body text-muted">O histórico de entradas será exibido aqui em uma etapa futura.</div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

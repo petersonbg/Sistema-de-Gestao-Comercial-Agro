@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block title %}{{ produto.nome }} | Produtos{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="d-flex flex-column flex-md-row justify-content-between gap-3 align-items-md-center mb-4">
+    <div>
+      <h1 class="h3 mb-1">{{ produto.nome }}</h1>
+      <p class="text-muted mb-0">Detalhes do cadastro e organização do produto.</p>
+    </div>
+    <div class="d-flex gap-2">
+      <a href="{% url 'produtos:produto_list' %}" class="btn btn-outline-secondary">Voltar</a>
+      <a href="{% url 'produtos:produto_update' produto.pk %}" class="btn btn-success">Editar</a>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-lg-8">
+      <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+          <strong>Dados gerais</strong>
+          {% if produto.ativo %}<span class="badge text-bg-success">Ativo</span>{% else %}<span class="badge text-bg-secondary">Inativo</span>{% endif %}
+        </div>
+        <div class="card-body">
+          <dl class="row mb-0">
+            <dt class="col-sm-4">Nome</dt><dd class="col-sm-8">{{ produto.nome }}</dd>
+            <dt class="col-sm-4">Código interno</dt><dd class="col-sm-8">{{ produto.codigo_interno }}</dd>
+            <dt class="col-sm-4">Código de barras</dt><dd class="col-sm-8">{{ produto.codigo_barras|default:"-" }}</dd>
+            <dt class="col-sm-4">Código BNDES</dt><dd class="col-sm-8">{{ produto.codigo_bndes|default:"-" }}</dd>
+            <dt class="col-sm-4">Código MDA</dt><dd class="col-sm-8">{{ produto.codigo_mda|default:"-" }}</dd>
+            <dt class="col-sm-4">NCM</dt><dd class="col-sm-8">{{ produto.ncm|default:"-" }}</dd>
+            <dt class="col-sm-4">Categoria</dt><dd class="col-sm-8">{{ produto.categoria }}</dd>
+            <dt class="col-sm-4">Marca</dt><dd class="col-sm-8">{{ produto.marca|default:"-" }}</dd>
+            <dt class="col-sm-4">Tipo de produto</dt><dd class="col-sm-8">{{ produto.get_tipo_produto_display }}</dd>
+            <dt class="col-sm-4">Descrição</dt><dd class="col-sm-8">{{ produto.descricao|linebreaksbr|default:"-" }}</dd>
+          </dl>
+        </div>
+      </div>
+
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white"><strong>Tipo de controle e estoque</strong></div>
+        <div class="card-body">
+          <dl class="row mb-0">
+            <dt class="col-sm-4">Tipo de controle</dt><dd class="col-sm-8">{{ produto.get_tipo_controle_estoque_display }}</dd>
+            <dt class="col-sm-4">Unidade de venda</dt><dd class="col-sm-8">{{ produto.get_unidade_venda_display }}</dd>
+            <dt class="col-sm-4">Quantidade por embalagem</dt><dd class="col-sm-8">{{ produto.quantidade_por_embalagem|default:"-" }}</dd>
+            <dt class="col-sm-4">Unidade de referência</dt><dd class="col-sm-8">{{ produto.get_unidade_referencia_display|default:"-" }}</dd>
+            <dt class="col-sm-4">Estoque atual</dt><dd class="col-sm-8">{{ produto.estoque_atual }}</dd>
+            <dt class="col-sm-4">Estoque mínimo</dt><dd class="col-sm-8">{{ produto.estoque_minimo }}</dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header bg-white"><strong>Preços</strong></div>
+        <div class="card-body">
+          <dl class="row mb-0">
+            <dt class="col-6">Preço de custo</dt><dd class="col-6 text-end">R$ {{ produto.preco_custo }}</dd>
+            <dt class="col-6">Preço de venda</dt><dd class="col-6 text-end fw-semibold">R$ {{ produto.preco_venda }}</dd>
+          </dl>
+        </div>
+      </div>
+
+      <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header bg-white"><strong>Uso do controle</strong></div>
+        <div class="card-body small text-muted">
+          {% if produto.tipo_controle_estoque == 'lote' %}
+            Produto preparado para controle por lote e validade, indicado para adubos e fertilizantes.
+          {% elif produto.tipo_controle_estoque == 'serial' %}
+            Produto preparado para controle por unidade identificada, indicado para triciclos, máquinas e equipamentos.
+          {% else %}
+            Produto preparado para quantidade simples, indicado para peças e produtos comuns.
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white"><strong>Ações</strong></div>
+        <div class="card-body">
+          {% if produto.ativo %}
+            <form method="post" action="{% url 'produtos:produto_inactivate' produto.pk %}">{% csrf_token %}<button type="submit" class="btn btn-outline-danger w-100">Inativar produto</button></form>
+          {% else %}
+            <p class="text-muted mb-0">Este produto está inativo.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
