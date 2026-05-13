@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}Orçamento #{{ orcamento.pk }} | Sistema de Gestão Comercial Agro{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="d-flex flex-column flex-md-row justify-content-between gap-3 align-items-md-center mb-4">
+    <div>
+      <span class="badge text-bg-{% if orcamento.status == 'convertido' %}success{% elif orcamento.status == 'cancelado' or orcamento.status == 'vencido' %}danger{% else %}warning{% endif %} mb-2">{{ orcamento.get_status_display }}</span>
+      <h1 class="h3 mb-1">Orçamento #{{ orcamento.pk }}</h1>
+      <p class="text-muted mb-0">Visualização do orçamento. Estoque não é baixado até a conversão em venda.</p>
+    </div>
+    <div class="d-flex gap-2">
+      <a href="{% url 'orcamentos:list' %}" class="btn btn-outline-secondary">Listagem</a>
+      <a href="{% url 'orcamentos:create' %}" class="btn btn-success">Novo orçamento</a>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-lg-8">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white"><strong>Itens orçados</strong></div>
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+              <tr>
+                <th>Produto</th>
+                <th>Controle</th>
+                <th class="text-end">Qtd.</th>
+                <th class="text-end">Preço</th>
+                <th class="text-end">Desc.</th>
+                <th class="text-end">Subtotal</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in orcamento.itens.all %}
+                <tr>
+                  <td><strong>{{ item.produto.nome }}</strong><br><span class="text-muted small">{{ item.produto.codigo_interno }}</span></td>
+                  <td>{{ item.produto.get_tipo_controle_estoque_display }}</td>
+                  <td class="text-end">{{ item.quantidade }}</td>
+                  <td class="text-end">R$ {{ item.preco_unitario }}</td>
+                  <td class="text-end">R$ {{ item.desconto }}</td>
+                  <td class="text-end">R$ {{ item.subtotal }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white"><strong>Resumo</strong></div>
+        <div class="card-body">
+          <dl class="row mb-0">
+            <dt class="col-5">Cliente</dt><dd class="col-7 text-end">{{ orcamento.cliente }}</dd>
+            <dt class="col-5">Vendedor</dt><dd class="col-7 text-end">{{ orcamento.usuario }}</dd>
+            <dt class="col-5">Emissão</dt><dd class="col-7 text-end">{{ orcamento.data|date:"d/m/Y H:i" }}</dd>
+            <dt class="col-5">Validade</dt><dd class="col-7 text-end">{{ orcamento.validade|date:"d/m/Y" }}</dd>
+            <dt class="col-5">Subtotal</dt><dd class="col-7 text-end">R$ {{ orcamento.subtotal }}</dd>
+            <dt class="col-5">Desconto</dt><dd class="col-7 text-end">R$ {{ orcamento.desconto }}</dd>
+            <dt class="col-5">Total</dt><dd class="col-7 text-end fw-bold">R$ {{ orcamento.total }}</dd>
+          </dl>
+          {% if orcamento.observacoes %}
+            <hr>
+            <p class="small text-muted mb-0">{{ orcamento.observacoes|linebreaksbr }}</p>
+          {% endif %}
+        </div>
+      </div>
+
+      {% if orcamento.status == 'aberto' or orcamento.status == 'aprovado' or orcamento.status == 'vencido' %}
+        <div class="card border-0 shadow-sm mt-4">
+          <div class="card-header bg-white"><strong>Converter em venda</strong></div>
+          <div class="card-body">
+            {% if orcamento.status == 'vencido' and not pode_autorizar_vencido %}
+              <div class="alert alert-danger small mb-0">Orçamento vencido só pode ser convertido por um administrador.</div>
+            {% else %}
+              <form method="post" action="{% url 'orcamentos:convert' orcamento.pk %}">
+                {% csrf_token %}
+                <div class="mb-3">
+                  <label for="{{ converter_form.forma_pagamento.id_for_label }}" class="form-label">{{ converter_form.forma_pagamento.label }}</label>
+                  {{ converter_form.forma_pagamento }}
+                </div>
+                {% if orcamento.status == 'vencido' %}
+                  <div class="alert alert-warning small">Você está autorizando a conversão de um orçamento vencido.</div>
+                {% endif %}
+                <button type="submit" class="btn btn-success w-100" onclick="return confirm('Converter este orçamento em venda? O estoque será validado e baixado agora.');">Converter em venda</button>
+              </form>
+            {% endif %}
+          </div>
+        </div>
+
+        {% if orcamento.status != 'cancelado' and orcamento.status != 'convertido' %}
+          <form method="post" action="{% url 'orcamentos:cancel' orcamento.pk %}" class="mt-3">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-outline-danger w-100" onclick="return confirm('Cancelar este orçamento?');">Cancelar orçamento</button>
+          </form>
+        {% endif %}
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
