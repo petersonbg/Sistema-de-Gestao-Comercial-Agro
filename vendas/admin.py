@@ -15,7 +15,7 @@ class VendaItemInline(admin.TabularInline):
 
 @admin.register(Venda)
 class VendaAdmin(AdminComercialMixin, admin.ModelAdmin):
-    list_display = ("id", "data", "empresa", "cliente", "usuario", "forma_pagamento", "status", "subtotal", "desconto", "total")
+    list_display = ("id", "data", "empresa", "cliente", "usuario", "forma_pagamento", "status", "subtotal", "desconto", "total", "cancelado_por")
     search_fields = (
         "=id",
         "cliente__nome",
@@ -24,15 +24,16 @@ class VendaAdmin(AdminComercialMixin, admin.ModelAdmin):
         "empresa__nome_fantasia",
         "observacoes",
     )
-    list_filter = ("status", "forma_pagamento", "data", "usuario")
-    readonly_fields = ("criado_em", "atualizado_em")
-    list_select_related = ("empresa", "cliente", "usuario")
+    list_filter = ("status", "forma_pagamento", "data", "usuario", "cancelado_por")
+    readonly_fields = ("criado_em", "atualizado_em", "cancelado_em")
+    list_select_related = ("empresa", "cliente", "usuario", "cancelado_por")
     inlines = (VendaItemInline,)
     fieldsets = (
         ("Identificação", {"fields": ("empresa", "cliente", "usuario", "data", "status")}),
         ("Pagamento", {"fields": ("forma_pagamento",)}),
         ("Valores", {"fields": ("subtotal", "desconto", "total")}),
         ("Observações", {"fields": ("observacoes",)}),
+        ("Cancelamento", {"fields": ("cancelado_por", "cancelado_em", "motivo_cancelamento")}),
         ("Auditoria", {"fields": ("criado_em", "atualizado_em")}),
     )
 

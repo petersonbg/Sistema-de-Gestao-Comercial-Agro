@@ -130,3 +130,19 @@ class FinalizarVendaForm(forms.Form):
     def __init__(self, *args, empresa=None, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["cliente"].queryset = Cliente.objects.filter(empresa=empresa, ativo=True).order_by("nome")
+
+
+class CancelarVendaForm(forms.Form):
+    """Formulário para cancelamento total da venda."""
+
+    motivo = forms.CharField(
+        label="Motivo do cancelamento",
+        min_length=5,
+        widget=forms.Textarea(
+            attrs={
+                "class": "form-control",
+                "rows": 4,
+                "placeholder": "Informe o motivo do cancelamento",
+            }
+        ),
+    )

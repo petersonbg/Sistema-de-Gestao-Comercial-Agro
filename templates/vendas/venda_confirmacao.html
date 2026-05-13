@@ -1,14 +1,18 @@
 {% extends "base.html" %}
 
-{% block title %}Venda #{{ venda.pk }} finalizada | Sistema de Gestão Comercial Agro{% endblock %}
+{% block title %}Venda #{{ venda.pk }} | Sistema de Gestão Comercial Agro{% endblock %}
 
 {% block content %}
 <div class="container">
   <div class="d-flex flex-column flex-md-row justify-content-between gap-3 align-items-md-center mb-4">
     <div>
-      <span class="badge text-bg-success mb-2">Venda finalizada</span>
+      {% if venda.status == 'cancelada' %}
+        <span class="badge text-bg-danger mb-2">Venda cancelada</span>
+      {% else %}
+        <span class="badge text-bg-success mb-2">Venda finalizada</span>
+      {% endif %}
       <h1 class="h3 mb-1">Venda #{{ venda.pk }}</h1>
-      <p class="text-muted mb-0">Estoque baixado e movimentações registradas.</p>
+      <p class="text-muted mb-0">{% if venda.status == 'cancelada' %}Estoque devolvido por cancelamento.{% else %}Estoque baixado e movimentações registradas.{% endif %}</p>
     </div>
     <div class="d-flex gap-2">
       <a href="{% url 'vendas:balcao' %}" class="btn btn-success">Nova venda</a>
@@ -67,13 +71,43 @@
             <dt class="col-6">Subtotal</dt><dd class="col-6 text-end">R$ {{ venda.subtotal }}</dd>
             <dt class="col-6">Desconto total</dt><dd class="col-6 text-end">R$ {{ venda.desconto }}</dd>
             <dt class="col-6">Total</dt><dd class="col-6 text-end fw-bold">R$ {{ venda.total }}</dd>
+            <dt class="col-6">Status</dt><dd class="col-6 text-end">{{ venda.get_status_display }}</dd>
           </dl>
+          {% if venda.status == 'cancelada' %}
+            <hr>
+            <dl class="row mb-0">
+              <dt class="col-6">Cancelado por</dt><dd class="col-6 text-end">{{ venda.cancelado_por }}</dd>
+              <dt class="col-6">Cancelado em</dt><dd class="col-6 text-end">{{ venda.cancelado_em|date:"d/m/Y H:i" }}</dd>
+              <dt class="col-12">Motivo</dt><dd class="col-12">{{ venda.motivo_cancelamento|linebreaksbr }}</dd>
+            </dl>
+          {% endif %}
           {% if venda.observacoes %}
             <hr>
             <p class="small text-muted mb-0">{{ venda.observacoes|linebreaksbr }}</p>
           {% endif %}
         </div>
       </div>
+
+      {% if venda.status == 'finalizada' %}
+        {% if user.perfil == 'administrador' or user.is_superuser %}
+          <div class="card border-0 shadow-sm mt-4">
+            <div class="card-header bg-white"><strong>Cancelar venda</strong></div>
+            <div class="card-body">
+              <div class="alert alert-warning small">
+                Esta ação cancela a venda inteira, devolve todos os itens ao estoque e registra movimentações do tipo cancelamento de venda. Não há cancelamento parcial nesta etapa.
+              </div>
+              <form method="post" action="{% url 'vendas:cancelar' venda.pk %}">
+                {% csrf_token %}
+                <div class="mb-3">
+                  <label for="{{ cancelar_form.motivo.id_for_label }}" class="form-label">{{ cancelar_form.motivo.label }}</label>
+                  {{ cancelar_form.motivo }}
+                </div>
+                <button type="submit" class="btn btn-outline-danger w-100" onclick="return confirm('Confirma o cancelamento total desta venda?');">Cancelar venda</button>
+              </form>
+            </div>
+          </div>
+        {% endif %}
+      {% endif %}
     </div>
   </div>
 </div>

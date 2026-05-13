@@ -156,7 +156,7 @@ Perfis iniciais:
 
 O dashboard exibe indicadores simples de clientes, produtos ativos, estoque baixo, vendas do dia e orçamentos abertos.
 
-O CRUD de clientes, fornecedores, categorias, marcas e produtos usa busca, paginação, detalhes, cadastro, edição e inativação lógica, sempre restringindo dados à empresa vinculada ao usuário logado. O módulo de estoque registra entradas conforme o controle do produto e atualiza o saldo com movimentação vinculada. O módulo de venda balcão finaliza vendas em transação atômica, aplica descontos e baixa estoque por controle simples, lote FEFO ou unidade serial.
+O CRUD de clientes, fornecedores, categorias, marcas e produtos usa busca, paginação, detalhes, cadastro, edição e inativação lógica, sempre restringindo dados à empresa vinculada ao usuário logado. O módulo de estoque registra entradas conforme o controle do produto e atualiza o saldo com movimentação vinculada. O módulo de venda balcão finaliza vendas em transação atômica, aplica descontos e baixa estoque por controle simples, lote FEFO ou unidade serial. Vendas finalizadas podem ser canceladas por administradores, com motivo obrigatório, devolução integral ao estoque e movimentações de cancelamento.
 
 ## Models iniciais
 

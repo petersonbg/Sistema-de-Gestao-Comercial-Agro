@@ -11,11 +11,11 @@ from django.utils import timezone
 from django.views import View
 from django.views.generic import DetailView
 
-from core.crud_mixins import EmpresaObrigatoriaMixin
+from core.crud_mixins import EmpresaAdministradorObrigatoriaMixin, EmpresaObrigatoriaMixin
 from estoque.models import LoteEstoque, MovimentacaoEstoque, UnidadeIdentificada
 from produtos.models import Produto
 
-from .forms import AdicionarItemVendaForm, FinalizarVendaForm, ProdutoBuscaForm
+from .forms import AdicionarItemVendaForm, CancelarVendaForm, FinalizarVendaForm, ProdutoBuscaForm
 from .models import Venda, VendaItem
 
 
@@ -395,11 +395,112 @@ class VendaBalcaoView(EmpresaObrigatoriaMixin, View):
 
 
 class VendaConfirmacaoView(EmpresaObrigatoriaMixin, DetailView):
-    """Confirmação da venda finalizada."""
+    """Confirmação e detalhes da venda."""
 
     model = Venda
     template_name = "vendas/venda_confirmacao.html"
     context_object_name = "venda"
 
     def get_queryset(self):
-        return Venda.objects.filter(empresa=self.request.user.empresa).select_related("cliente", "usuario")
+        return Venda.objects.filter(empresa=self.request.user.empresa).select_related(
+            "cliente",
+            "usuario",
+            "cancelado_por",
+        ).prefetch_related("itens__produto", "itens__lote", "itens__unidade_identificada")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["cancelar_form"] = CancelarVendaForm()
+        return context
+
+
+class VendaCancelarView(EmpresaAdministradorObrigatoriaMixin, View):
+    """Cancela uma venda finalizada e devolve todos os itens ao estoque."""
+
+    def post(self, request, *args, **kwargs):
+        venda = get_object_or_404(Venda, pk=kwargs["pk"], empresa=self.get_empresa())
+        form = CancelarVendaForm(request.POST)
+        if not form.is_valid():
+            messages.error(request, "Informe um motivo válido para cancelar a venda.")
+            return redirect("vendas:confirmacao", pk=venda.pk)
+
+        try:
+            with transaction.atomic():
+                self.cancelar_venda(venda.pk, form.cleaned_data["motivo"])
+        except ValidationError as exc:
+            messages.error(request, exc.messages[0] if hasattr(exc, "messages") else str(exc))
+            return redirect("vendas:confirmacao", pk=venda.pk)
+
+        messages.success(request, f"Venda #{venda.pk} cancelada com sucesso e estoque devolvido.")
+        return redirect("vendas:confirmacao", pk=venda.pk)
+
+    def cancelar_venda(self, venda_id, motivo):
+        """Executa o cancelamento total da venda em transação atômica."""
+        venda = Venda.objects.select_for_update().get(pk=venda_id, empresa=self.get_empresa())
+        if venda.status == Venda.Status.CANCELADA:
+            raise ValidationError("Venda já cancelada não pode ser cancelada novamente.")
+        if venda.status != Venda.Status.FINALIZADA:
+            raise ValidationError("Apenas vendas finalizadas podem ser canceladas.")
+
+        itens = venda.itens.select_related("produto", "lote", "unidade_identificada").select_for_update()
+        for item in itens:
+            self.devolver_item_ao_estoque(item)
+
+        venda.status = Venda.Status.CANCELADA
+        venda.motivo_cancelamento = motivo
+        venda.cancelado_por = self.request.user
+        venda.cancelado_em = timezone.now()
+        venda.save(update_fields=["status", "motivo_cancelamento", "cancelado_por", "cancelado_em", "atualizado_em"])
+
+    def devolver_item_ao_estoque(self, item):
+        """Devolve um item ao estoque conforme o tipo de controle do produto."""
+        produto = Produto.objects.select_for_update().get(pk=item.produto_id, empresa=self.get_empresa())
+        if item.unidade_identificada_id:
+            self.devolver_unidade_serial(item, produto)
+        elif item.lote_id:
+            self.devolver_lote(item, produto)
+        else:
+            self.devolver_simples(item, produto)
+
+    def devolver_simples(self, item, produto):
+        """Devolve quantidade diretamente ao estoque do produto."""
+        produto.estoque_atual += item.quantidade
+        produto.save(update_fields=["estoque_atual", "atualizado_em"])
+        self.registrar_movimentacao_cancelamento(item, item.quantidade)
+
+    def devolver_lote(self, item, produto):
+        """Devolve quantidade ao lote e ao estoque geral do produto."""
+        lote = LoteEstoque.objects.select_for_update().get(pk=item.lote_id, empresa=self.get_empresa())
+        lote.quantidade_atual += item.quantidade
+        lote.save(update_fields=["quantidade_atual"])
+        produto.estoque_atual += item.quantidade
+        produto.save(update_fields=["estoque_atual", "atualizado_em"])
+        self.registrar_movimentacao_cancelamento(item, item.quantidade)
+
+    def devolver_unidade_serial(self, item, produto):
+        """Devolve unidade serial vendida para disponível."""
+        unidade = UnidadeIdentificada.objects.select_for_update().get(
+            pk=item.unidade_identificada_id,
+            empresa=self.get_empresa(),
+            produto=produto,
+        )
+        if unidade.status != UnidadeIdentificada.Status.VENDIDO:
+            raise ValidationError(f"Unidade {unidade} não está marcada como vendida.")
+        unidade.status = UnidadeIdentificada.Status.DISPONIVEL
+        unidade.save(update_fields=["status", "atualizado_em"])
+        produto.estoque_atual += Decimal("1.000")
+        produto.save(update_fields=["estoque_atual", "atualizado_em"])
+        self.registrar_movimentacao_cancelamento(item, Decimal("1.000"))
+
+    def registrar_movimentacao_cancelamento(self, item, quantidade):
+        """Registra movimentação de devolução por cancelamento de venda."""
+        MovimentacaoEstoque.objects.create(
+            empresa=self.get_empresa(),
+            produto=item.produto,
+            tipo_movimentacao=MovimentacaoEstoque.TipoMovimentacao.CANCELAMENTO_VENDA,
+            quantidade=quantidade,
+            lote=item.lote,
+            unidade_identificada=item.unidade_identificada,
+            usuario=self.request.user,
+            observacao=f"Cancelamento da venda #{item.venda_id}",
+        )

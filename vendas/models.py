@@ -27,6 +27,13 @@ class Venda(models.Model):
         null=True,
     )
     usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="vendas")
+    cancelado_por = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.PROTECT,
+        related_name="vendas_canceladas",
+        blank=True,
+        null=True,
+    )
     data = models.DateTimeField(default=timezone.now)
     subtotal = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     desconto = models.DecimalField(max_digits=12, decimal_places=2, default=0)
@@ -34,6 +41,8 @@ class Venda(models.Model):
     forma_pagamento = models.CharField(max_length=20, choices=FormaPagamento.choices)
     status = models.CharField(max_length=20, choices=Status.choices, default=Status.FINALIZADA)
     observacoes = models.TextField(blank=True)
+    motivo_cancelamento = models.TextField(blank=True)
+    cancelado_em = models.DateTimeField(blank=True, null=True)
     criado_em = models.DateTimeField(auto_now_add=True)
     atualizado_em = models.DateTimeField(auto_now=True)
 
