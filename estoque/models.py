@@ -56,6 +56,7 @@ class UnidadeIdentificada(models.Model):
     modelo = models.CharField(max_length=100, blank=True)
     cor = models.CharField(max_length=50, blank=True)
     ano_modelo = models.PositiveIntegerField(blank=True, null=True)
+    ano_fabricacao = models.PositiveIntegerField(blank=True, null=True)
     preco_custo = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     preco_venda = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     status = models.CharField(max_length=20, choices=Status.choices, default=Status.DISPONIVEL)

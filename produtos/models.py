@@ -86,6 +86,9 @@ class Produto(models.Model):
     descricao = models.TextField(blank=True)
     codigo_interno = models.CharField(max_length=50)
     codigo_barras = models.CharField(max_length=50, blank=True, null=True)
+    codigo_bndes = models.CharField(max_length=50, blank=True)
+    codigo_mda = models.CharField(max_length=50, blank=True)
+    ncm = models.CharField(max_length=10, blank=True)
     tipo_produto = models.CharField(max_length=30, choices=TipoProduto.choices, default=TipoProduto.OUTRO)
     tipo_controle_estoque = models.CharField(
         max_length=10,

@@ -166,6 +166,12 @@ class EntradaSerialForm(EntradaEstoqueBaseForm):
         min_value=1900,
         widget=forms.NumberInput(attrs={"class": "form-control"}),
     )
+    ano_fabricacao = forms.IntegerField(
+        label="Ano de fabricação",
+        required=False,
+        min_value=1900,
+        widget=forms.NumberInput(attrs={"class": "form-control"}),
+    )
     preco_custo = forms.DecimalField(
         label="Preço de custo",
         max_digits=12,

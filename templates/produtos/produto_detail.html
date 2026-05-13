@@ -27,6 +27,9 @@
             <dt class="col-sm-4">Nome</dt><dd class="col-sm-8">{{ produto.nome }}</dd>
             <dt class="col-sm-4">Código interno</dt><dd class="col-sm-8">{{ produto.codigo_interno }}</dd>
             <dt class="col-sm-4">Código de barras</dt><dd class="col-sm-8">{{ produto.codigo_barras|default:"-" }}</dd>
+            <dt class="col-sm-4">Código BNDES</dt><dd class="col-sm-8">{{ produto.codigo_bndes|default:"-" }}</dd>
+            <dt class="col-sm-4">Código MDA</dt><dd class="col-sm-8">{{ produto.codigo_mda|default:"-" }}</dd>
+            <dt class="col-sm-4">NCM</dt><dd class="col-sm-8">{{ produto.ncm|default:"-" }}</dd>
             <dt class="col-sm-4">Categoria</dt><dd class="col-sm-8">{{ produto.categoria }}</dd>
             <dt class="col-sm-4">Marca</dt><dd class="col-sm-8">{{ produto.marca|default:"-" }}</dd>
             <dt class="col-sm-4">Tipo de produto</dt><dd class="col-sm-8">{{ produto.get_tipo_produto_display }}</dd>

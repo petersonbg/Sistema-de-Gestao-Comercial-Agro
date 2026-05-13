@@ -17,7 +17,7 @@
       <div class="row g-3 align-items-end">
         <div class="col-md-7">
           <label for="q" class="form-label">Busca</label>
-          <input type="search" class="form-control" id="q" name="q" value="{{ busca }}" placeholder="Nome, CPF/CNPJ, telefone ou WhatsApp">
+          <input type="search" class="form-control" id="q" name="q" value="{{ busca }}" placeholder="Nome, CPF/CNPJ, inscrição estadual, telefone ou WhatsApp">
         </div>
         <div class="col-md-3">
           <label for="status" class="form-label">Status</label>
@@ -41,6 +41,7 @@
           <tr>
             <th>Nome</th>
             <th>CPF/CNPJ</th>
+            <th>Inscrição estadual</th>
             <th>Telefone</th>
             <th>WhatsApp</th>
             <th>Cidade</th>
@@ -53,6 +54,7 @@
             <tr>
               <td class="fw-semibold">{{ cliente.nome }}</td>
               <td>{{ cliente.cpf_cnpj|default:"-" }}</td>
+              <td>{{ cliente.inscricao_estadual|default:"-" }}</td>
               <td>{{ cliente.telefone|default:"-" }}</td>
               <td>{{ cliente.whatsapp|default:"-" }}</td>
               <td>{{ cliente.cidade|default:"-" }}</td>
@@ -70,7 +72,7 @@
             </tr>
           {% empty %}
             <tr>
-              <td colspan="7" class="text-center text-muted py-4">Nenhum cliente encontrado.</td>
+              <td colspan="8" class="text-center text-muted py-4">Nenhum cliente encontrado.</td>
             </tr>
           {% endfor %}
         </tbody>

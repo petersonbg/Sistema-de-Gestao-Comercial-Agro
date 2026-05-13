@@ -40,6 +40,9 @@ class ProdutoAdmin(AdminComercialMixin, admin.ModelAdmin):
         "descricao",
         "codigo_interno",
         "codigo_barras",
+        "codigo_bndes",
+        "codigo_mda",
+        "ncm",
         "empresa__nome_fantasia",
         "categoria__nome",
         "marca__nome",
@@ -49,7 +52,7 @@ class ProdutoAdmin(AdminComercialMixin, admin.ModelAdmin):
     list_select_related = ("empresa", "categoria", "marca")
     fieldsets = (
         ("Identificação", {"fields": ("empresa", "categoria", "marca", "nome", "descricao", "ativo")}),
-        ("Códigos", {"fields": ("codigo_interno", "codigo_barras")}),
+        ("Códigos", {"fields": ("codigo_interno", "codigo_barras", "codigo_bndes", "codigo_mda", "ncm")}),
         ("Classificação e controle", {"fields": ("tipo_produto", "tipo_controle_estoque")}),
         (
             "Venda e embalagem",

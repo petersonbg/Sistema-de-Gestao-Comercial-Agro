@@ -14,6 +14,7 @@ class Cliente(models.Model):
     nome = models.CharField(max_length=150)
     tipo_pessoa = models.CharField(max_length=10, choices=TipoPessoa.choices, default=TipoPessoa.FISICA)
     cpf_cnpj = models.CharField(max_length=18, blank=True)
+    inscricao_estadual = models.CharField(max_length=30, blank=True, null=True)
     telefone = models.CharField(max_length=20, blank=True)
     whatsapp = models.CharField(max_length=20, blank=True)
     email = models.EmailField(blank=True)

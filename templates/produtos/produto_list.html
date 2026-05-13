@@ -21,7 +21,7 @@
       <div class="row g-3 align-items-end">
         <div class="col-lg-5">
           <label for="q" class="form-label">Busca</label>
-          <input type="search" class="form-control" id="q" name="q" value="{{ busca }}" placeholder="Nome, código interno, código de barras, categoria ou marca">
+          <input type="search" class="form-control" id="q" name="q" value="{{ busca }}" placeholder="Nome, código interno, código de barras, BNDES, MDA, NCM, categoria ou marca">
         </div>
         <div class="col-md-3 col-lg-3">
           <label for="tipo_controle" class="form-label">Tipo de controle</label>
@@ -53,6 +53,7 @@
             <th>Nome</th>
             <th>Código interno</th>
             <th>Código de barras</th>
+            <th>NCM</th>
             <th>Categoria</th>
             <th>Tipo de controle</th>
             <th class="text-end">Preço de venda</th>
@@ -67,6 +68,7 @@
               <td class="fw-semibold">{{ produto.nome }}</td>
               <td>{{ produto.codigo_interno }}</td>
               <td>{{ produto.codigo_barras|default:"-" }}</td>
+              <td>{{ produto.ncm|default:"-" }}</td>
               <td>{{ produto.categoria }}</td>
               <td>{{ produto.get_tipo_controle_estoque_display }}</td>
               <td class="text-end">R$ {{ produto.preco_venda }}</td>
@@ -78,7 +80,7 @@
               </td>
             </tr>
           {% empty %}
-            <tr><td colspan="9" class="text-center text-muted py-4">Nenhum produto encontrado.</td></tr>
+            <tr><td colspan="10" class="text-center text-muted py-4">Nenhum produto encontrado.</td></tr>
           {% endfor %}
         </tbody>
       </table>

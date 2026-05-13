@@ -148,6 +148,7 @@ class EntradaEstoqueView(EmpresaAdministradorObrigatoriaMixin, View):
             modelo=form.cleaned_data.get("modelo", ""),
             cor=form.cleaned_data.get("cor", ""),
             ano_modelo=form.cleaned_data.get("ano_modelo"),
+            ano_fabricacao=form.cleaned_data.get("ano_fabricacao"),
             preco_custo=form.cleaned_data["preco_custo"],
             preco_venda=form.cleaned_data.get("preco_venda") or produto.preco_venda,
             status=UnidadeIdentificada.Status.DISPONIVEL,

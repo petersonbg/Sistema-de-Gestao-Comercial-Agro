@@ -69,6 +69,9 @@ class ProdutoForm(forms.ModelForm):
             "descricao",
             "codigo_interno",
             "codigo_barras",
+            "codigo_bndes",
+            "codigo_mda",
+            "ncm",
             "tipo_produto",
             "tipo_controle_estoque",
             "unidade_venda",
@@ -86,6 +89,9 @@ class ProdutoForm(forms.ModelForm):
             "descricao": forms.Textarea(attrs={"class": "form-control", "rows": 4}),
             "codigo_interno": forms.TextInput(attrs={"class": "form-control"}),
             "codigo_barras": forms.TextInput(attrs={"class": "form-control"}),
+            "codigo_bndes": forms.TextInput(attrs={"class": "form-control"}),
+            "codigo_mda": forms.TextInput(attrs={"class": "form-control"}),
+            "ncm": forms.TextInput(attrs={"class": "form-control", "maxlength": 10}),
             "tipo_produto": forms.Select(attrs={"class": "form-select"}),
             "tipo_controle_estoque": forms.Select(attrs={"class": "form-select"}),
             "unidade_venda": forms.Select(attrs={"class": "form-select"}),
@@ -138,6 +144,15 @@ class ProdutoForm(forms.ModelForm):
         if self.empresa and queryset.exists():
             raise ValidationError("Já existe um produto com este código de barras nesta empresa.")
         return codigo_barras
+
+    def clean_codigo_bndes(self):
+        return (self.cleaned_data.get("codigo_bndes") or "").strip()
+
+    def clean_codigo_mda(self):
+        return (self.cleaned_data.get("codigo_mda") or "").strip()
+
+    def clean_ncm(self):
+        return (self.cleaned_data.get("ncm") or "").strip()
 
     def clean_preco_custo(self):
         return self._validar_nao_negativo("preco_custo", "Preço de custo")

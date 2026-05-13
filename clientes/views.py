@@ -37,6 +37,7 @@ class ClienteListView(ClienteQuerysetMixin, ListView):
             queryset = queryset.filter(
                 Q(nome__icontains=busca)
                 | Q(cpf_cnpj__icontains=busca)
+                | Q(inscricao_estadual__icontains=busca)
                 | Q(telefone__icontains=busca)
                 | Q(whatsapp__icontains=busca)
             )

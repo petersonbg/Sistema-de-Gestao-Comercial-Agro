@@ -40,6 +40,7 @@ class UnidadeIdentificadaAdmin(AdminSomenteAdministradorMixin, admin.ModelAdmin)
         "modelo",
         "cor",
         "ano_modelo",
+        "ano_fabricacao",
         "status",
         "preco_venda",
     )
@@ -58,7 +59,7 @@ class UnidadeIdentificadaAdmin(AdminSomenteAdministradorMixin, admin.ModelAdmin)
     list_select_related = ("empresa", "produto", "fornecedor")
     fieldsets = (
         ("Produto", {"fields": ("empresa", "produto", "fornecedor", "status")}),
-        ("Identificação", {"fields": ("numero_serie", "chassi", "modelo", "cor", "ano_modelo")}),
+        ("Identificação", {"fields": ("numero_serie", "chassi", "modelo", "cor", "ano_modelo", "ano_fabricacao")}),
         ("Valores", {"fields": ("preco_custo", "preco_venda")}),
         ("Observações", {"fields": ("observacoes",)}),
         ("Auditoria", {"fields": ("criado_em", "atualizado_em")}),

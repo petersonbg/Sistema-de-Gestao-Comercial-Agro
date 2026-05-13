@@ -26,6 +26,7 @@
           <dl class="row mb-0">
             <dt class="col-sm-4">Tipo de pessoa</dt><dd class="col-sm-8">{{ cliente.get_tipo_pessoa_display }}</dd>
             <dt class="col-sm-4">CPF/CNPJ</dt><dd class="col-sm-8">{{ cliente.cpf_cnpj|default:"-" }}</dd>
+            <dt class="col-sm-4">Inscrição estadual</dt><dd class="col-sm-8">{{ cliente.inscricao_estadual|default:"-" }}</dd>
             <dt class="col-sm-4">Telefone</dt><dd class="col-sm-8">{{ cliente.telefone|default:"-" }}</dd>
             <dt class="col-sm-4">WhatsApp</dt><dd class="col-sm-8">{{ cliente.whatsapp|default:"-" }}</dd>
             <dt class="col-sm-4">E-mail</dt><dd class="col-sm-8">{{ cliente.email|default:"-" }}</dd>
