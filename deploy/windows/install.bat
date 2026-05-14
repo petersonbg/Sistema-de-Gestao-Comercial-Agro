@@ -26,6 +26,22 @@ for %%D in ("%INSTALL_ROOT%" "%APP_DIR%" "%LOG_DIR%" "%BACKUP_DIR%" "%MEDIA_DIR%
     if not exist "%%~D" mkdir "%%~D"
 )
 
+set "INSTALL_LOG=%LOG_DIR%\install.log"
+if /I not "%~1"=="--logged" (
+    echo Registrando instalacao em %INSTALL_LOG%...
+    call "%~f0" --logged > "%INSTALL_LOG%" 2>&1
+    set "INSTALL_EXIT=!ERRORLEVEL!"
+    type "%INSTALL_LOG%"
+    if not "!INSTALL_EXIT!"=="0" (
+        echo.
+        echo ERRO: instalacao falhou. Verifique o log em %INSTALL_LOG%.
+        exit /b !INSTALL_EXIT!
+    )
+    exit /b 0
+)
+
+echo ==== Instalacao SistemaGestaoAgro iniciada em %DATE% %TIME% ====
+
 if /I not "%CD%"=="%APP_DIR%" (
     if not exist "%APP_DIR%\manage.py" (
         echo Copiando arquivos da aplicacao para %APP_DIR%...
@@ -123,12 +139,26 @@ if not errorlevel 1 (
 "%NSSM_EXE%" set %SERVICE_NAME% AppRotateOnline 1
 "%NSSM_EXE%" set %SERVICE_NAME% AppRotateBytes 10485760
 
+sc query "%SERVICE_NAME%" >nul 2>&1
+if errorlevel 1 (
+    echo ERRO: o servico %SERVICE_NAME% nao foi encontrado apos o registro pelo NSSM.
+    echo Verifique se o NSSM foi executado corretamente e consulte %INSTALL_LOG%.
+    exit /b 1
+)
+
 if not exist "%LOG_DIR%\service.out.log" type nul > "%LOG_DIR%\service.out.log"
 if not exist "%LOG_DIR%\service.err.log" type nul > "%LOG_DIR%\service.err.log"
 
 echo Iniciando servico %SERVICE_NAME%...
 "%NSSM_EXE%" start %SERVICE_NAME%
 if errorlevel 1 exit /b 1
+
+sc query "%SERVICE_NAME%" | find /I "RUNNING" >nul 2>&1
+if errorlevel 1 (
+    echo ERRO: o servico %SERVICE_NAME% foi registrado, mas nao esta em execucao.
+    echo Consulte %LOG_DIR%\service.err.log e %INSTALL_LOG%.
+    exit /b 1
+)
 
 echo.
 echo Instalacao concluida.

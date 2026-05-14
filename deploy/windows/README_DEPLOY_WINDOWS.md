@@ -245,6 +245,44 @@ Consulte esses arquivos quando o serviço não iniciar ou quando o sistema retor
 ## Problemas comuns
 
 
+
+### `[SC] EnumQueryServicesStatus:OpenService FALHA 1060`
+
+Esse erro significa que o Windows não encontrou um serviço chamado `SistemaGestaoAgro`. Normalmente isso acontece quando a instalação falhou antes da etapa de registro no NSSM, por exemplo por falta de Python, NSSM, dependências Python ou conexão com PostgreSQL durante o `migrate`.
+
+Para corrigir:
+
+1. Abra o Prompt de Comando como Administrador.
+2. Execute novamente o instalador manualmente para ver a saída completa:
+
+   ```bat
+   C:\SistemaGestaoAgro\app\deploy\windows\install.bat
+   ```
+
+3. Consulte o log da instalação:
+
+   ```text
+   C:\SistemaGestaoAgro\logs\install.log
+   ```
+
+4. Corrija o primeiro erro indicado no log. Os casos mais comuns são:
+   - `nssm` não encontrado: coloque `nssm.exe` em `C:\SistemaGestaoAgro\app\deploy\windows\nssm.exe` ou no `PATH`;
+   - PostgreSQL parado ou credenciais incorretas no `.env`;
+   - `waitress-serve.exe` ausente por falha no `pip install -r requirements.txt`;
+   - Python não instalado no `PATH`.
+
+5. Depois rode novamente:
+
+   ```bat
+   C:\SistemaGestaoAgro\app\deploy\windows\install.bat
+   ```
+
+6. Valide se o serviço foi criado:
+
+   ```bat
+   sc query SistemaGestaoAgro
+   ```
+
 ### Atalho da área de trabalho não abre nada
 
 O atalho da área de trabalho executa `open_system.bat`, que abre `http://localhost:8000/` no navegador padrão e avisa se o serviço não estiver em execução.

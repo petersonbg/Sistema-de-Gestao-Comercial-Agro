@@ -42,7 +42,7 @@ Name: "{group}\Reiniciar servico"; Filename: "{app}\app\deploy\windows\restart_s
 Name: "{group}\Desinstalar Sistema Gestao Agro"; Filename: "{uninstallexe}"
 
 [Run]
-Filename: "{app}\app\deploy\windows\install.bat"; WorkingDir: "{app}\app"; Flags: runhidden waituntilterminated; StatusMsg: "Instalando e configurando o servico Sistema Gestao Agro..."
+Filename: "{app}\app\deploy\windows\install.bat"; WorkingDir: "{app}\app"; Flags: waituntilterminated; StatusMsg: "Instalando e configurando o servico Sistema Gestao Agro..."
 Filename: "{app}\app\deploy\windows\open_system.bat"; WorkingDir: "{app}\app\deploy\windows"; Description: "Abrir Sistema Gestao Agro"; Flags: postinstall shellexec skipifsilent nowait
 
 [UninstallRun]
