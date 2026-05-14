@@ -244,6 +244,34 @@ Consulte esses arquivos quando o serviço não iniciar ou quando o sistema retor
 
 ## Problemas comuns
 
+
+### Atalho da área de trabalho não abre nada
+
+O atalho da área de trabalho executa `open_system.bat`, que abre `http://localhost:8000/` no navegador padrão e avisa se o serviço não estiver em execução.
+
+Se nada aparecer:
+
+1. Abra o Prompt de Comando como Administrador.
+2. Verifique se o serviço existe e está rodando:
+
+   ```bat
+   sc query SistemaGestaoAgro
+   ```
+
+3. Tente iniciar o serviço manualmente:
+
+   ```bat
+   C:\SistemaGestaoAgro\app\deploy\windows\start_service.bat
+   ```
+
+4. Abra o endereço diretamente no navegador:
+
+   ```text
+   http://localhost:8000/
+   ```
+
+5. Se o navegador mostrar erro de conexão, consulte os logs em `C:\SistemaGestaoAgro\logs\service.err.log` e `C:\SistemaGestaoAgro\logs\service.out.log`.
+
 ### `python` não encontrado
 
 Reinstale o Python marcando **Add python.exe to PATH** ou ajuste o `PATH` do sistema.

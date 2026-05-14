@@ -34,8 +34,8 @@ Name: "{app}\media"
 Source: "..\..\*"; DestDir: "{app}\app"; Flags: recursesubdirs createallsubdirs ignoreversion; Excludes: ".git\*,.venv\*,venv\*,env\*,__pycache__\*,backups\*,media\*,staticfiles\*,deploy\windows\Output\*,*.pyc,*.pyo,db.sqlite3"
 
 [Icons]
-Name: "{commondesktop}\Sistema Gestao Agro"; Filename: "{#MyAppURL}"
-Name: "{group}\Sistema Gestao Agro"; Filename: "{#MyAppURL}"
+Name: "{commondesktop}\Sistema Gestao Agro"; Filename: "{app}\app\deploy\windows\open_system.bat"; WorkingDir: "{app}\app\deploy\windows"
+Name: "{group}\Sistema Gestao Agro"; Filename: "{app}\app\deploy\windows\open_system.bat"; WorkingDir: "{app}\app\deploy\windows"
 Name: "{group}\Iniciar servico"; Filename: "{app}\app\deploy\windows\start_service.bat"; WorkingDir: "{app}\app\deploy\windows"
 Name: "{group}\Parar servico"; Filename: "{app}\app\deploy\windows\stop_service.bat"; WorkingDir: "{app}\app\deploy\windows"
 Name: "{group}\Reiniciar servico"; Filename: "{app}\app\deploy\windows\restart_service.bat"; WorkingDir: "{app}\app\deploy\windows"
@@ -43,7 +43,7 @@ Name: "{group}\Desinstalar Sistema Gestao Agro"; Filename: "{uninstallexe}"
 
 [Run]
 Filename: "{app}\app\deploy\windows\install.bat"; WorkingDir: "{app}\app"; Flags: runhidden waituntilterminated; StatusMsg: "Instalando e configurando o servico Sistema Gestao Agro..."
-Filename: "{#MyAppURL}"; Description: "Abrir Sistema Gestao Agro"; Flags: postinstall shellexec skipifsilent nowait
+Filename: "{app}\app\deploy\windows\open_system.bat"; WorkingDir: "{app}\app\deploy\windows"; Description: "Abrir Sistema Gestao Agro"; Flags: postinstall shellexec skipifsilent nowait
 
 [UninstallRun]
 Filename: "{app}\app\deploy\windows\uninstall.bat"; WorkingDir: "{app}\app"; Flags: runhidden waituntilterminated
