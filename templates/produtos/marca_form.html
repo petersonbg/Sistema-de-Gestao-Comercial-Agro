@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}{% if object %}Editar marca{% else %}Nova marca{% endif %} | Sistema de Gestão Comercial Agro{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-lg-7">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h1 class="h3 mb-1">{% if object %}Editar marca{% else %}Nova marca{% endif %}</h1>
+          <p class="text-muted mb-0">A marca será vinculada à empresa do seu usuário.</p>
+        </div>
+        <a href="{% url 'produtos:marca_list' %}" class="btn btn-outline-secondary">Voltar</a>
+      </div>
+
+      <form method="post" class="card border-0 shadow-sm" novalidate>
+        {% csrf_token %}
+        <div class="card-body">
+          {% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}
+          {% for field in form %}
+            <div class="mb-3">
+              <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+              {{ field }}
+              {% for error in field.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+            </div>
+          {% endfor %}
+        </div>
+        <div class="card-footer bg-white d-flex justify-content-end gap-2">
+          <a href="{% if object %}{% url 'produtos:marca_detail' object.pk %}{% else %}{% url 'produtos:marca_list' %}{% endif %}" class="btn btn-outline-secondary">Cancelar</a>
+          <button type="submit" class="btn btn-success">Salvar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
