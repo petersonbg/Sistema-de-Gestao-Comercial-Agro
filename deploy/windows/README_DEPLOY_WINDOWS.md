@@ -328,13 +328,31 @@ C:\SistemaGestaoAgro\venv\Scripts\pip.exe install -r C:\SistemaGestaoAgro\app\re
 
 ### Erro ao conectar no PostgreSQL
 
+Se o log mostrar `connection refused`, `porta 5432`, `Is the server running on that host` ou a mensagem `PostgreSQL nao esta acessivel`, a instalação parou antes de registrar o serviço porque o Django não conseguiu acessar o banco.
+
 Verifique:
 
-- serviço PostgreSQL iniciado;
-- banco `sistema_gestao` criado;
-- usuário e senha em `C:\SistemaGestaoAgro\app\.env`;
-- porta `5432`;
-- firewall/antivírus bloqueando conexões locais.
+- se o PostgreSQL está instalado;
+- se o serviço do PostgreSQL está iniciado no Windows;
+- se o banco `sistema_gestao` foi criado;
+- se usuário e senha em `C:\SistemaGestaoAgro\app\.env` estão corretos;
+- se `POSTGRES_HOST=localhost` e `POSTGRES_PORT=5432` correspondem à instalação local;
+- se firewall/antivírus não estão bloqueando conexões locais.
+
+Comandos úteis no Windows:
+
+```bat
+sc query postgresql-x64-16
+netstat -ano | findstr :5432
+```
+
+O nome exato do serviço pode variar conforme a versão instalada do PostgreSQL, por exemplo `postgresql-x64-15`, `postgresql-x64-16` ou `postgresql-x64-17`.
+
+Depois de iniciar/corrigir o PostgreSQL, rode novamente como Administrador:
+
+```bat
+C:\SistemaGestaoAgro\app\deploy\windows\install.bat
+```
 
 ### Erro `DisallowedHost`
 

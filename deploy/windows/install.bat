@@ -99,6 +99,15 @@ if not exist "%APP_DIR%\.env" (
     echo Arquivo .env ja existe; mantendo configuracao atual.
 )
 
+echo Verificando conexao com PostgreSQL antes das migracoes...
+"%VENV_PY%" "%SCRIPT_DIR%check_postgres.py" "%APP_DIR%\.env"
+if errorlevel 1 (
+    echo.
+    echo ERRO: PostgreSQL nao esta acessivel. O servico Windows ainda nao sera criado.
+    echo Corrija a configuracao acima e execute novamente este install.bat como Administrador.
+    exit /b 1
+)
+
 echo Executando migracoes do banco de dados...
 "%VENV_PY%" "%APP_DIR%\manage.py" migrate
 if errorlevel 1 exit /b 1
