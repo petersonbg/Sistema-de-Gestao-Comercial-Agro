@@ -147,6 +147,14 @@ deploy\windows\restart_service.bat
 
 Também é possível abrir `services.msc` e procurar por **SistemaGestaoAgro**.
 
+Internamente, o serviço chama:
+
+```bat
+C:\SistemaGestaoAgro\app\deploy\windows\run_waitress.bat
+```
+
+Esse script contém o comando Waitress que foi validado manualmente e deve permanecer como a forma padronizada de iniciar a aplicação.
+
 ## Desinstalação
 
 Execute como administrador:
@@ -338,13 +346,17 @@ C:\SistemaGestaoAgro\app\deploy\windows\install.bat
 
 ### Serviço fica `SERVICE_PAUSED` ou não inicia após o NSSM
 
-Se o log mostrar `Unexpected status SERVICE_PAUSED in response to START control`, o serviço foi criado, mas o processo do Django/Waitress não permaneceu em execução. O instalador agora configura o NSSM para chamar o Python do ambiente virtual com `python -m waitress`, aguarda o serviço entrar em `RUNNING` e imprime as últimas linhas de `service.err.log` e `service.out.log` quando houver falha.
-
-Para diagnosticar manualmente no Windows:
+Se o log mostrar `Unexpected status SERVICE_PAUSED in response to START control`, o serviço foi criado, mas o processo do Django/Waitress não permaneceu em execução. O instalador configura o NSSM para executar `run_waitress.bat`, que automatiza exatamente o comando manual validado:
 
 ```bat
 cd /d C:\SistemaGestaoAgro\app
 C:\SistemaGestaoAgro\venv\Scripts\python.exe -m waitress --listen=0.0.0.0:8000 sistema_gestao.wsgi:application
+```
+
+Para diagnosticar manualmente no Windows, execute o mesmo script usado pelo serviço:
+
+```bat
+C:\SistemaGestaoAgro\app\deploy\windows\run_waitress.bat
 ```
 
 Se o comando manual falhar, corrija o erro exibido no console. Causas comuns:

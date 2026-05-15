@@ -78,6 +78,7 @@ if not exist "%VENV_DIR%\Scripts\python.exe" (
 set "VENV_PY=%VENV_DIR%\Scripts\python.exe"
 set "VENV_PIP=%VENV_DIR%\Scripts\pip.exe"
 set "WAITRESS_EXE=%VENV_DIR%\Scripts\waitress-serve.exe"
+set "RUN_WAITRESS_BAT=%SCRIPT_DIR%run_waitress.bat"
 
 echo Atualizando pip e instalando dependencias...
 "%VENV_PY%" -m pip install --upgrade pip
@@ -148,14 +149,19 @@ if not errorlevel 1 (
     "%NSSM_EXE%" stop %SERVICE_NAME% >nul 2>&1
 ) else (
     echo Registrando servico %SERVICE_NAME%...
-    "%NSSM_EXE%" install %SERVICE_NAME% "%VENV_PY%"
+    "%NSSM_EXE%" install %SERVICE_NAME% "%ComSpec%"
     if errorlevel 1 exit /b 1
 )
 
-echo Configurando servico %SERVICE_NAME% para executar python -m waitress...
-"%NSSM_EXE%" set %SERVICE_NAME% Application "%VENV_PY%"
+if not exist "%RUN_WAITRESS_BAT%" (
+    echo ERRO: script de execucao nao encontrado em "%RUN_WAITRESS_BAT%".
+    exit /b 1
+)
+
+echo Configurando servico %SERVICE_NAME% para executar o mesmo comando validado manualmente...
+"%NSSM_EXE%" set %SERVICE_NAME% Application "%ComSpec%"
 "%NSSM_EXE%" set %SERVICE_NAME% AppDirectory "%APP_DIR%"
-"%NSSM_EXE%" set %SERVICE_NAME% AppParameters -m waitress --listen=%LISTEN% sistema_gestao.wsgi:application
+"%NSSM_EXE%" set %SERVICE_NAME% AppParameters /c ""%RUN_WAITRESS_BAT%""
 "%NSSM_EXE%" set %SERVICE_NAME% AppEnvironmentExtra PYTHONUNBUFFERED=1
 "%NSSM_EXE%" set %SERVICE_NAME% DisplayName "Sistema Gestao Agro"
 "%NSSM_EXE%" set %SERVICE_NAME% Description "Sistema de Gestao Comercial Agro - Django com Waitress"
@@ -208,7 +214,7 @@ if exist "%LOG_DIR%\service.out.log" (
 echo.
 echo Para testar manualmente, execute:
 echo cd /d %APP_DIR%
-echo "%VENV_PY%" -m waitress --listen=%LISTEN% sistema_gestao.wsgi:application
+echo "%RUN_WAITRESS_BAT%"
 echo.
 echo Consulte tambem %INSTALL_LOG%.
 exit /b 1
