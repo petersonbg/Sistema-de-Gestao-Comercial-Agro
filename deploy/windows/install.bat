@@ -121,9 +121,20 @@ if errorlevel 1 (
     if exist "%SCRIPT_DIR%nssm.exe" (
         set "NSSM_EXE=%SCRIPT_DIR%nssm.exe"
     ) else (
-        echo ERRO: NSSM nao encontrado no PATH nem em %SCRIPT_DIR%nssm.exe.
-        echo Baixe o NSSM em https://nssm.cc/ e coloque nssm.exe no PATH ou nesta pasta.
-        exit /b 1
+        echo NSSM nao encontrado no PATH nem em "%SCRIPT_DIR%nssm.exe".
+        echo Tentando baixar e preparar o NSSM automaticamente...
+        powershell -NoProfile -ExecutionPolicy Bypass -File "%SCRIPT_DIR%get_nssm.ps1"
+        if errorlevel 1 (
+            echo ERRO: nao foi possivel baixar/preparar o NSSM automaticamente.
+            echo Baixe manualmente em https://nssm.cc/download e copie nssm.exe para "%SCRIPT_DIR%nssm.exe".
+            exit /b 1
+        )
+        if exist "%SCRIPT_DIR%nssm.exe" (
+            set "NSSM_EXE=%SCRIPT_DIR%nssm.exe"
+        ) else (
+            echo ERRO: get_nssm.ps1 terminou, mas "%SCRIPT_DIR%nssm.exe" nao foi criado.
+            exit /b 1
+        )
     )
 )
 

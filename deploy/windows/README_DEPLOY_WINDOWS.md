@@ -92,15 +92,19 @@ Se o comando `python` não for reconhecido, reinstale marcando a opção de PATH
 
 ## Instalação do NSSM
 
+O `install.bat` tenta localizar o NSSM no `PATH` ou em `deploy\windows\nssm.exe`. Se não encontrar, ele tenta baixar automaticamente o NSSM usando `deploy\windows\get_nssm.ps1` e copia o executável correto para a pasta dos scripts.
+
+Se o download automático falhar por bloqueio de internet, proxy, antivírus ou política da empresa, faça manualmente:
+
 1. Baixe o NSSM em <https://nssm.cc/download>.
 2. Extraia o arquivo ZIP.
 3. Copie o `nssm.exe` compatível com a arquitetura do Windows para uma das opções abaixo:
    - uma pasta presente no `PATH` do Windows; ou
-   - `deploy\windows\nssm.exe`, ao lado do `install.bat`.
+   - `C:\SistemaGestaoAgro\app\deploy\windows\nssm.exe`, ao lado do `install.bat`.
 4. Valide no Prompt de Comando:
 
    ```bat
-   nssm version
+   C:\SistemaGestaoAgro\app\deploy\windows\nssm.exe version
    ```
 
 ## Instalação manual com install.bat
@@ -316,7 +320,20 @@ Reinstale o Python marcando **Add python.exe to PATH** ou ajuste o `PATH` do sis
 
 ### `nssm` não encontrado
 
-Coloque `nssm.exe` no `PATH` do Windows ou ao lado dos scripts em `deploy\windows\nssm.exe`.
+O instalador tenta baixar o NSSM automaticamente com `get_nssm.ps1`. Se aparecer `NSSM nao encontrado` ou `nao foi possivel baixar/preparar o NSSM automaticamente`, há duas opções:
+
+1. Execute novamente o instalador com internet liberada para `https://nssm.cc/`; ou
+2. Baixe manualmente o NSSM, extraia o ZIP e copie o executável para:
+
+   ```text
+   C:\SistemaGestaoAgro\app\deploy\windows\nssm.exe
+   ```
+
+Depois rode novamente como Administrador:
+
+```bat
+C:\SistemaGestaoAgro\app\deploy\windows\install.bat
+```
 
 ### `waitress-serve.exe` não encontrado
 
