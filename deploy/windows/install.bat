@@ -86,7 +86,11 @@ if errorlevel 1 exit /b 1
 if errorlevel 1 exit /b 1
 
 if not exist "%WAITRESS_EXE%" (
-    echo ERRO: waitress-serve.exe nao foi encontrado em %WAITRESS_EXE%.
+    echo AVISO: waitress-serve.exe nao foi encontrado em %WAITRESS_EXE%. Validando modulo waitress...
+)
+"%VENV_PY%" -m waitress --help >nul 2>&1
+if errorlevel 1 (
+    echo ERRO: o modulo waitress nao esta disponivel no ambiente virtual.
     echo Confirme se waitress esta listado no requirements.txt e se a instalacao das dependencias concluiu sem erros.
     exit /b 1
 )
@@ -144,12 +148,15 @@ if not errorlevel 1 (
     "%NSSM_EXE%" stop %SERVICE_NAME% >nul 2>&1
 ) else (
     echo Registrando servico %SERVICE_NAME%...
-    "%NSSM_EXE%" install %SERVICE_NAME% "%WAITRESS_EXE%"
+    "%NSSM_EXE%" install %SERVICE_NAME% "%VENV_PY%"
     if errorlevel 1 exit /b 1
 )
 
+echo Configurando servico %SERVICE_NAME% para executar python -m waitress...
+"%NSSM_EXE%" set %SERVICE_NAME% Application "%VENV_PY%"
 "%NSSM_EXE%" set %SERVICE_NAME% AppDirectory "%APP_DIR%"
-"%NSSM_EXE%" set %SERVICE_NAME% AppParameters --listen=%LISTEN% sistema_gestao.wsgi:application
+"%NSSM_EXE%" set %SERVICE_NAME% AppParameters -m waitress --listen=%LISTEN% sistema_gestao.wsgi:application
+"%NSSM_EXE%" set %SERVICE_NAME% AppEnvironmentExtra PYTHONUNBUFFERED=1
 "%NSSM_EXE%" set %SERVICE_NAME% DisplayName "Sistema Gestao Agro"
 "%NSSM_EXE%" set %SERVICE_NAME% Description "Sistema de Gestao Comercial Agro - Django com Waitress"
 "%NSSM_EXE%" set %SERVICE_NAME% Start SERVICE_AUTO_START
@@ -171,14 +178,43 @@ if not exist "%LOG_DIR%\service.err.log" type nul > "%LOG_DIR%\service.err.log"
 
 echo Iniciando servico %SERVICE_NAME%...
 "%NSSM_EXE%" start %SERVICE_NAME%
-if errorlevel 1 exit /b 1
-
-sc query "%SERVICE_NAME%" | find /I "RUNNING" >nul 2>&1
 if errorlevel 1 (
-    echo ERRO: o servico %SERVICE_NAME% foi registrado, mas nao esta em execucao.
-    echo Consulte %LOG_DIR%\service.err.log e %INSTALL_LOG%.
-    exit /b 1
+    echo AVISO: NSSM retornou erro ao iniciar. Verificando status e logs...
 )
+
+for /L %%I in (1,1,15) do (
+    sc query "%SERVICE_NAME%" | find /I "RUNNING" >nul 2>&1
+    if not errorlevel 1 goto service_running
+    timeout /t 2 /nobreak >nul
+)
+
+echo ERRO: o servico %SERVICE_NAME% foi registrado, mas nao ficou em execucao.
+echo Status atual do servico:
+sc query "%SERVICE_NAME%"
+echo.
+echo Ultimas linhas de %LOG_DIR%\service.err.log:
+if exist "%LOG_DIR%\service.err.log" (
+    powershell -NoProfile -Command "Get-Content -Path '%LOG_DIR%\service.err.log' -Tail 80"
+) else (
+    echo Arquivo service.err.log ainda nao foi criado.
+)
+echo.
+echo Ultimas linhas de %LOG_DIR%\service.out.log:
+if exist "%LOG_DIR%\service.out.log" (
+    powershell -NoProfile -Command "Get-Content -Path '%LOG_DIR%\service.out.log' -Tail 80"
+) else (
+    echo Arquivo service.out.log ainda nao foi criado.
+)
+echo.
+echo Para testar manualmente, execute:
+echo cd /d %APP_DIR%
+echo "%VENV_PY%" -m waitress --listen=%LISTEN% sistema_gestao.wsgi:application
+echo.
+echo Consulte tambem %INSTALL_LOG%.
+exit /b 1
+
+:service_running
+echo Servico %SERVICE_NAME% iniciado com sucesso.
 
 echo.
 echo Instalacao concluida.

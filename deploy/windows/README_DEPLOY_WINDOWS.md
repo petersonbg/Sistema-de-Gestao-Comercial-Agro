@@ -335,6 +335,34 @@ Depois rode novamente como Administrador:
 C:\SistemaGestaoAgro\app\deploy\windows\install.bat
 ```
 
+
+### Serviço fica `SERVICE_PAUSED` ou não inicia após o NSSM
+
+Se o log mostrar `Unexpected status SERVICE_PAUSED in response to START control`, o serviço foi criado, mas o processo do Django/Waitress não permaneceu em execução. O instalador agora configura o NSSM para chamar o Python do ambiente virtual com `python -m waitress`, aguarda o serviço entrar em `RUNNING` e imprime as últimas linhas de `service.err.log` e `service.out.log` quando houver falha.
+
+Para diagnosticar manualmente no Windows:
+
+```bat
+cd /d C:\SistemaGestaoAgro\app
+C:\SistemaGestaoAgro\venv\Scripts\python.exe -m waitress --listen=0.0.0.0:8000 sistema_gestao.wsgi:application
+```
+
+Se o comando manual falhar, corrija o erro exibido no console. Causas comuns:
+
+- porta `8000` já em uso por outro processo;
+- erro no `.env`;
+- banco PostgreSQL inacessível no momento em que o serviço inicia;
+- dependência Python ausente ou quebrada;
+- erro de importação ao carregar `sistema_gestao.wsgi`.
+
+Também verifique:
+
+```bat
+type C:\SistemaGestaoAgro\logs\service.err.log
+type C:\SistemaGestaoAgro\logs\service.out.log
+netstat -ano | findstr :8000
+```
+
 ### `waitress-serve.exe` não encontrado
 
 Confirme que `waitress` está em `requirements.txt` e execute novamente:
