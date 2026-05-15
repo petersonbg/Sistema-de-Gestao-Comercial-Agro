@@ -297,7 +297,7 @@ Para corrigir:
 
 ### Atalho da área de trabalho não abre nada
 
-O atalho da área de trabalho executa `open_system.bat`. Ele verifica se o serviço `SistemaGestaoAgro` está em execução; se estiver parado, tenta iniciar automaticamente via `start_service.bat` com elevação de administrador e aguarda até 30 segundos antes de abrir `http://localhost:8000/` no navegador padrão.
+O atalho da área de trabalho executa `open_system.bat`. Ele verifica se o serviço `SistemaGestaoAgro` está em execução; se estiver parado, tenta iniciar automaticamente via `start_service.bat` com elevação de administrador. Se o serviço ainda não entrar em execução, o atalho usa um fallback: executa `run_waitress.bat` em uma janela minimizada, que é o mesmo comando Waitress validado manualmente, aguarda a porta `8000` responder e então abre `http://localhost:8000/` no navegador padrão.
 
 Se nada aparecer:
 
@@ -314,7 +314,7 @@ Se nada aparecer:
    C:\SistemaGestaoAgro\app\deploy\windows\start_service.bat
    ```
 
-4. Se o serviço não iniciar, teste o comando Waitress sem NSSM:
+4. Se o serviço não iniciar, o próprio atalho tentará executar `run_waitress.bat` em janela minimizada. Você também pode testar esse fallback manualmente:
 
    ```bat
    C:\SistemaGestaoAgro\app\deploy\windows\run_waitress.bat
