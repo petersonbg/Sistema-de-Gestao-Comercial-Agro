@@ -6,6 +6,10 @@ from django.urls import include, path
 from core.forms import BootstrapAuthenticationForm
 from core.views import dashboard, logout_view
 
+admin.site.site_header = "Gestão Agro"
+admin.site.site_title = "Gestão Agro Admin"
+admin.site.index_title = "Administração do Sistema"
+
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", dashboard, name="dashboard"),
