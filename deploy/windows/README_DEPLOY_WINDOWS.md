@@ -297,7 +297,7 @@ Para corrigir:
 
 ### Atalho da área de trabalho não abre nada
 
-O atalho da área de trabalho executa `open_system.bat`, que abre `http://localhost:8000/` no navegador padrão e avisa se o serviço não estiver em execução.
+O atalho da área de trabalho executa `open_system.bat`. Ele verifica se o serviço `SistemaGestaoAgro` está em execução; se estiver parado, tenta iniciar automaticamente via `start_service.bat` com elevação de administrador e aguarda até 30 segundos antes de abrir `http://localhost:8000/` no navegador padrão.
 
 Se nada aparecer:
 
@@ -308,19 +308,25 @@ Se nada aparecer:
    sc query SistemaGestaoAgro
    ```
 
-3. Tente iniciar o serviço manualmente:
+3. Tente iniciar o serviço manualmente como Administrador:
 
    ```bat
    C:\SistemaGestaoAgro\app\deploy\windows\start_service.bat
    ```
 
-4. Abra o endereço diretamente no navegador:
+4. Se o serviço não iniciar, teste o comando Waitress sem NSSM:
+
+   ```bat
+   C:\SistemaGestaoAgro\app\deploy\windows\run_waitress.bat
+   ```
+
+5. Abra o endereço diretamente no navegador:
 
    ```text
    http://localhost:8000/
    ```
 
-5. Se o navegador mostrar erro de conexão, consulte os logs em `C:\SistemaGestaoAgro\logs\service.err.log` e `C:\SistemaGestaoAgro\logs\service.out.log`.
+6. Se o navegador mostrar erro de conexão, consulte os logs em `C:\SistemaGestaoAgro\logs\service.err.log` e `C:\SistemaGestaoAgro\logs\service.out.log`.
 
 ### `python` não encontrado
 
