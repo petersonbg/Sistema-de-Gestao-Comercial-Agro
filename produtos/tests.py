@@ -34,8 +34,8 @@ class ProdutoCadastroTests(TestCase):
             "marca": "",
             "nome": "Adubo teste",
             "descricao": "",
-            "codigo_interno": "ADB001",
             "codigo_barras": "789000000001",
+            "chassi": "abc-123",
             "tipo_produto": Produto.TipoProduto.ADUBO,
             "tipo_controle_estoque": Produto.TipoControleEstoque.SIMPLES,
             "unidade_venda": Produto.UnidadeVenda.SACO,
@@ -52,23 +52,31 @@ class ProdutoCadastroTests(TestCase):
     def test_cadastro_de_produto_filtra_empresa_e_valida_codigos(self):
         response = self.client.post(reverse("produtos:produto_create"), self.dados_produto())
         self.assertEqual(response.status_code, 302)
-        produto = Produto.objects.get(empresa=self.empresa, codigo_interno="ADB001")
+        produto = Produto.objects.get(empresa=self.empresa, codigo_interno="PROD000001")
         self.assertEqual(produto.codigo_barras, "789000000001")
+        self.assertEqual(produto.chassi, "ABC-123")
         self.assertEqual(produto.estoque_atual, Decimal("0.000"))
 
-        duplicado_interno = self.client.post(
+        duplicado_chassi = self.client.post(
             reverse("produtos:produto_create"),
             self.dados_produto(nome="Outro", codigo_barras="789000000002"),
         )
-        self.assertEqual(duplicado_interno.status_code, 200)
-        self.assertContains(duplicado_interno, "Já existe um produto com este código interno")
+        self.assertEqual(duplicado_chassi.status_code, 200)
+        self.assertContains(duplicado_chassi, "Já existe um produto com este chassi")
 
         duplicado_barras = self.client.post(
             reverse("produtos:produto_create"),
-            self.dados_produto(nome="Outro", codigo_interno="ADB002"),
+            self.dados_produto(nome="Outro", chassi="XYZ-999"),
         )
         self.assertEqual(duplicado_barras.status_code, 200)
         self.assertContains(duplicado_barras, "Já existe um produto com este código de barras")
+
+        response = self.client.post(
+            reverse("produtos:produto_create"),
+            self.dados_produto(nome="Outro", codigo_barras="789000000002", chassi="XYZ-999"),
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(Produto.objects.filter(empresa=self.empresa, codigo_interno="PROD000002").exists())
 
         Produto.objects.create(
             empresa=self.outra_empresa,
@@ -80,3 +88,6 @@ class ProdutoCadastroTests(TestCase):
         )
         response = self.client.get(reverse("produtos:produto_list"), {"q": "EXT001"})
         self.assertNotContains(response, "Produto de outra empresa")
+
+        response = self.client.get(reverse("produtos:produto_list"), {"q": "XYZ-999"})
+        self.assertContains(response, "Outro")

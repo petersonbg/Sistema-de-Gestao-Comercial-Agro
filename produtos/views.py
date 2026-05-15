@@ -247,6 +247,7 @@ class ProdutoListView(ProdutoQuerysetMixin, ListView):
                 Q(nome__icontains=busca)
                 | Q(codigo_interno__icontains=busca)
                 | Q(codigo_barras__icontains=busca)
+                | Q(chassi__icontains=busca)
                 | Q(codigo_bndes__icontains=busca)
                 | Q(codigo_mda__icontains=busca)
                 | Q(ncm__icontains=busca)

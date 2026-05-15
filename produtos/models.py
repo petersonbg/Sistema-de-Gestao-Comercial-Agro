@@ -3,6 +3,9 @@ from django.db import models
 from django.db.models import Q
 
 
+CODIGO_INTERNO_PREFIXO = "PROD"
+
+
 class Categoria(models.Model):
     """Categoria de produtos por empresa."""
 
@@ -84,8 +87,9 @@ class Produto(models.Model):
     )
     nome = models.CharField(max_length=150)
     descricao = models.TextField(blank=True)
-    codigo_interno = models.CharField(max_length=50)
+    codigo_interno = models.CharField(max_length=50, blank=True)
     codigo_barras = models.CharField(max_length=50, blank=True, null=True)
+    chassi = models.CharField(max_length=100, blank=True)
     codigo_bndes = models.CharField(max_length=50, blank=True)
     codigo_mda = models.CharField(max_length=50, blank=True)
     ncm = models.CharField(max_length=10, blank=True)
@@ -122,11 +126,39 @@ class Produto(models.Model):
                 condition=Q(codigo_barras__isnull=False) & ~Q(codigo_barras=""),
                 name="uniq_produto_codigo_barras_por_empresa",
             ),
+            models.UniqueConstraint(
+                fields=["empresa", "chassi"],
+                condition=~Q(chassi=""),
+                name="uniq_produto_chassi_por_empresa",
+            ),
             models.CheckConstraint(check=Q(preco_custo__gte=0), name="produto_preco_custo_gte_0"),
             models.CheckConstraint(check=Q(preco_venda__gte=0), name="produto_preco_venda_gte_0"),
             models.CheckConstraint(check=Q(estoque_atual__gte=0), name="produto_estoque_atual_gte_0"),
             models.CheckConstraint(check=Q(estoque_minimo__gte=0), name="produto_estoque_minimo_gte_0"),
         ]
+
+    @classmethod
+    def gerar_codigo_interno(cls, empresa):
+        """Gera o próximo código interno sequencial para a empresa informada."""
+        empresa_id = getattr(empresa, "pk", empresa)
+        maior_numero = 0
+
+        codigos = cls.objects.filter(
+            empresa_id=empresa_id,
+            codigo_interno__startswith=CODIGO_INTERNO_PREFIXO,
+        ).values_list("codigo_interno", flat=True)
+        for codigo in codigos:
+            sufixo = codigo.removeprefix(CODIGO_INTERNO_PREFIXO)
+            if sufixo.isdigit():
+                maior_numero = max(maior_numero, int(sufixo))
+
+        return f"{CODIGO_INTERNO_PREFIXO}{maior_numero + 1:06d}"
+
+    def save(self, *args, **kwargs):
+        self.codigo_interno = (self.codigo_interno or "").strip()
+        if not self.codigo_interno and self.empresa_id:
+            self.codigo_interno = self.gerar_codigo_interno(self.empresa_id)
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.codigo_interno} - {self.nome}"

@@ -67,8 +67,8 @@ class ProdutoForm(forms.ModelForm):
             "marca",
             "nome",
             "descricao",
-            "codigo_interno",
             "codigo_barras",
+            "chassi",
             "codigo_bndes",
             "codigo_mda",
             "ncm",
@@ -87,8 +87,8 @@ class ProdutoForm(forms.ModelForm):
             "marca": forms.Select(attrs={"class": "form-select"}),
             "nome": forms.TextInput(attrs={"class": "form-control", "autofocus": True}),
             "descricao": forms.Textarea(attrs={"class": "form-control", "rows": 4}),
-            "codigo_interno": forms.TextInput(attrs={"class": "form-control"}),
             "codigo_barras": forms.TextInput(attrs={"class": "form-control"}),
+            "chassi": forms.TextInput(attrs={"class": "form-control"}),
             "codigo_bndes": forms.TextInput(attrs={"class": "form-control"}),
             "codigo_mda": forms.TextInput(attrs={"class": "form-control"}),
             "ncm": forms.TextInput(attrs={"class": "form-control", "maxlength": 10}),
@@ -121,18 +121,6 @@ class ProdutoForm(forms.ModelForm):
         self.fields["unidade_referencia"].required = False
         self.fields["quantidade_por_embalagem"].required = False
 
-    def clean_codigo_interno(self):
-        codigo_interno = self.cleaned_data.get("codigo_interno", "").strip()
-        if not codigo_interno:
-            raise ValidationError("Código interno é obrigatório.")
-
-        queryset = Produto.objects.filter(empresa=self.empresa, codigo_interno=codigo_interno)
-        if self.instance.pk:
-            queryset = queryset.exclude(pk=self.instance.pk)
-        if self.empresa and queryset.exists():
-            raise ValidationError("Já existe um produto com este código interno nesta empresa.")
-        return codigo_interno
-
     def clean_codigo_barras(self):
         codigo_barras = (self.cleaned_data.get("codigo_barras") or "").strip()
         if not codigo_barras:
@@ -144,6 +132,18 @@ class ProdutoForm(forms.ModelForm):
         if self.empresa and queryset.exists():
             raise ValidationError("Já existe um produto com este código de barras nesta empresa.")
         return codigo_barras
+
+    def clean_chassi(self):
+        chassi = (self.cleaned_data.get("chassi") or "").strip().upper()
+        if not chassi:
+            return ""
+
+        queryset = Produto.objects.filter(empresa=self.empresa, chassi=chassi)
+        if self.instance.pk:
+            queryset = queryset.exclude(pk=self.instance.pk)
+        if self.empresa and queryset.exists():
+            raise ValidationError("Já existe um produto com este chassi nesta empresa.")
+        return chassi
 
     def clean_codigo_bndes(self):
         return (self.cleaned_data.get("codigo_bndes") or "").strip()

@@ -25,6 +25,7 @@ class ProdutoAdmin(AdminComercialMixin, admin.ModelAdmin):
     list_display = (
         "codigo_interno",
         "nome",
+        "chassi",
         "empresa",
         "categoria",
         "marca",
@@ -40,6 +41,7 @@ class ProdutoAdmin(AdminComercialMixin, admin.ModelAdmin):
         "descricao",
         "codigo_interno",
         "codigo_barras",
+        "chassi",
         "codigo_bndes",
         "codigo_mda",
         "ncm",
@@ -48,11 +50,11 @@ class ProdutoAdmin(AdminComercialMixin, admin.ModelAdmin):
         "marca__nome",
     )
     list_filter = ("empresa", "categoria", "tipo_produto", "tipo_controle_estoque", "ativo")
-    readonly_fields = ("criado_em", "atualizado_em")
+    readonly_fields = ("codigo_interno", "criado_em", "atualizado_em")
     list_select_related = ("empresa", "categoria", "marca")
     fieldsets = (
         ("Identificação", {"fields": ("empresa", "categoria", "marca", "nome", "descricao", "ativo")}),
-        ("Códigos", {"fields": ("codigo_interno", "codigo_barras", "codigo_bndes", "codigo_mda", "ncm")}),
+        ("Códigos", {"fields": ("codigo_interno", "codigo_barras", "chassi", "codigo_bndes", "codigo_mda", "ncm")}),
         ("Classificação e controle", {"fields": ("tipo_produto", "tipo_controle_estoque")}),
         (
             "Venda e embalagem",
