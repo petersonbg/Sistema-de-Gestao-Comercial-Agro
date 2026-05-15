@@ -98,11 +98,13 @@ static/js/           # JavaScript simples
    python manage.py migrate
    ```
 
-8. Crie um usuário administrador:
+8. Crie o primeiro usuário administrador:
 
    ```bash
    python manage.py createsuperuser
    ```
+
+   Informe um nome de usuário, e-mail e senha. Esse primeiro usuário terá acesso ao `/admin/`, mas ainda precisa ser vinculado a uma empresa para usar os módulos comerciais. Veja o passo a passo em [Primeiro uso](#primeiro-uso).
 
 9. Rode o servidor local:
 
@@ -114,6 +116,74 @@ static/js/           # JavaScript simples
 
     - No próprio servidor: <http://127.0.0.1:8000/>
     - Em outro computador da mesma rede: `http://IP_DO_SERVIDOR:8000/`
+
+## Primeiro uso
+
+Após instalar, migrar o banco e iniciar o servidor, faça a configuração inicial antes de cadastrar clientes, produtos, estoque ou vendas.
+
+### 1. Criar o primeiro usuário administrador
+
+No terminal, dentro da pasta do projeto e com o ambiente virtual ativo, execute:
+
+```bash
+python manage.py createsuperuser
+```
+
+Preencha:
+
+- **Username**: nome de login, por exemplo `admin`;
+- **Email address**: e-mail do responsável;
+- **Password** e **Password (again)**: senha forte para o administrador.
+
+Esse usuário é um superusuário do Django e consegue entrar no painel administrativo mesmo antes de estar vinculado a uma empresa.
+
+### 2. Entrar no painel administrativo
+
+1. Inicie o servidor, se ele ainda não estiver rodando:
+
+   ```bash
+   python manage.py runserver 0.0.0.0:8000
+   ```
+
+2. Acesse `http://127.0.0.1:8000/admin/`.
+3. Entre com o usuário e senha criados no passo anterior.
+
+### 3. Cadastrar a empresa
+
+No painel administrativo:
+
+1. Abra **Empresas > Empresas**.
+2. Clique em **Adicionar empresa**.
+3. Preencha ao menos **nome fantasia**, **razão social** e **CNPJ**.
+4. Salve o cadastro.
+
+### 4. Vincular o administrador à empresa
+
+Ainda no painel administrativo:
+
+1. Abra **Usuários > Usuários**.
+2. Clique no usuário administrador criado com `createsuperuser`.
+3. Em **Dados comerciais**, selecione a empresa cadastrada.
+4. Defina **Perfil** como `Administrador`.
+5. Mantenha **Ativo**, **Status de membro da equipe** e **Status de superusuário** marcados para esse primeiro usuário.
+6. Salve.
+
+> Sem vínculo com uma empresa, os módulos comerciais redirecionam o usuário para o dashboard com a mensagem de que é necessário vincular uma empresa.
+
+### 5. Criar usuários de operação
+
+Para cada pessoa que usará o sistema:
+
+1. Acesse **Usuários > Usuários > Adicionar usuário**.
+2. Informe usuário e senha inicial.
+3. Em **Dados comerciais**, vincule a mesma empresa.
+4. Escolha o perfil:
+   - `Administrador` para quem gerencia cadastros, cancelamentos e configurações;
+   - `Vendedor` para uso operacional de clientes, produtos, orçamentos e vendas.
+5. Marque **Ativo**.
+6. Use **Status de membro da equipe** apenas para quem precisa entrar no `/admin/`.
+
+Depois disso, os usuários podem entrar em `http://127.0.0.1:8000/login/` ou pelo endereço do servidor na rede interna.
 
 ## Configuração para rede local interna
 

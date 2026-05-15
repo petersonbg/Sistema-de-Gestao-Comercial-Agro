@@ -184,6 +184,69 @@ ou:
 http://127.0.0.1:8000/
 ```
 
+## Primeiro uso: criar o administrador e vincular a empresa
+
+O `install.bat` prepara o ambiente, executa migrações e inicia o serviço, mas não cria usuário automaticamente. Faça a criação manual do primeiro administrador para evitar deixar uma senha padrão no instalador.
+
+### 1. Criar o primeiro usuário administrador
+
+1. Abra o Prompt de Comando ou PowerShell.
+2. Execute:
+
+   ```bat
+   cd /d C:\SistemaGestaoAgro\app
+   C:\SistemaGestaoAgro\venv\Scripts\python.exe manage.py createsuperuser
+   ```
+
+3. Informe nome de usuário, e-mail e uma senha forte.
+
+Esse usuário inicial é um superusuário do Django e consegue acessar o painel administrativo.
+
+### 2. Entrar no painel administrativo
+
+1. Abra no servidor:
+
+   ```text
+   http://localhost:8000/admin/
+   ```
+
+2. Faça login com o usuário criado no comando `createsuperuser`.
+
+### 3. Cadastrar a empresa
+
+No painel administrativo:
+
+1. Abra **Empresas > Empresas**.
+2. Clique em **Adicionar empresa**.
+3. Preencha ao menos **nome fantasia**, **razão social** e **CNPJ**.
+4. Salve.
+
+### 4. Vincular o administrador à empresa
+
+No painel administrativo:
+
+1. Abra **Usuários > Usuários**.
+2. Edite o usuário criado no `createsuperuser`.
+3. Em **Dados comerciais**, selecione a empresa cadastrada.
+4. Defina **Perfil** como `Administrador`.
+5. Mantenha **Ativo**, **Status de membro da equipe** e **Status de superusuário** marcados para esse primeiro usuário.
+6. Salve.
+
+> Esse vínculo é necessário para usar os módulos comerciais. Sem empresa vinculada, o sistema bloqueia o acesso a cadastros e operações comerciais.
+
+### 5. Criar usuários para a equipe
+
+Para operadores, vendedores ou outros administradores:
+
+1. Entre em **Usuários > Usuários > Adicionar usuário**.
+2. Informe usuário e senha inicial.
+3. Vincule a empresa.
+4. Escolha o perfil `Administrador` ou `Vendedor`.
+5. Marque **Ativo**.
+6. Marque **Status de membro da equipe** somente para quem precisa acessar o `/admin/`.
+
+Depois disso, a equipe pode acessar `http://localhost:8000/login/` no servidor ou `http://IP_DO_SERVIDOR:8000/login/` em outros computadores da rede.
+
 ## Acesso pela rede local
 
 1. No servidor, descubra o IP local:
