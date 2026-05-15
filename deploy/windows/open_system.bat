@@ -48,8 +48,8 @@ if not exist "%RUN_WAITRESS_BAT%" (
     goto open_browser
 )
 
-echo Iniciando Waitress diretamente em janela minimizada...
-start "SistemaGestaoAgro Waitress" /min "%ComSpec%" /c ""%RUN_WAITRESS_BAT%""
+echo Iniciando Waitress diretamente em modo oculto...
+powershell -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -Command "Start-Process -WindowStyle Hidden -FilePath $env:ComSpec -ArgumentList @('/d','/c',(([char]34)+$env:RUN_WAITRESS_BAT+([char]34)))"
 
 for /L %%I in (1,1,15) do (
     powershell -NoProfile -Command "$c=New-Object Net.Sockets.TcpClient; try { $c.Connect('127.0.0.1',8000); $c.Close(); exit 0 } catch { exit 1 }" >nul 2>&1
@@ -70,7 +70,7 @@ start "" "%APP_URL%"
 if "%HAS_WARNING%"=="1" (
     echo.
     echo O navegador foi aberto, mas o servico precisa estar em execucao para o sistema responder.
-    echo Como alternativa, confirme se a janela minimizada do Waitress esta aberta.
+    echo Como alternativa, confirme no Gerenciador de Tarefas se o processo do Waitress esta ativo.
     pause
 )
 endlocal
