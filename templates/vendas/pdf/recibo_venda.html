@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <title>Recibo da venda #{{ venda.pk }}</title>
+  <style>
+    @page { size: A4; margin: 18mm; }
+    body { color: #1f2933; font-family: Arial, Helvetica, sans-serif; font-size: 12px; line-height: 1.45; }
+    .header { align-items: flex-start; border-bottom: 2px solid #198754; display: flex; justify-content: space-between; padding-bottom: 14px; }
+    .brand { display: flex; gap: 14px; }
+    .logo { max-height: 72px; max-width: 120px; object-fit: contain; }
+    h1 { color: #198754; font-size: 22px; margin: 0 0 4px; text-transform: uppercase; }
+    h2 { font-size: 15px; margin: 22px 0 8px; }
+    .muted { color: #64748b; }
+    .document-title { text-align: right; }
+    .document-title strong { display: block; font-size: 18px; }
+    .grid { display: grid; gap: 10px; grid-template-columns: 1fr 1fr; margin-top: 18px; }
+    .box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 10px; }
+    .box dl { margin: 0; }
+    .box dt { color: #64748b; font-size: 10px; text-transform: uppercase; }
+    .box dd { margin: 0 0 6px; }
+    table { border-collapse: collapse; margin-top: 8px; width: 100%; }
+    th { background: #198754; color: #fff; font-size: 10px; padding: 8px; text-align: left; text-transform: uppercase; }
+    td { border-bottom: 1px solid #e2e8f0; padding: 8px; vertical-align: top; }
+    .right { text-align: right; }
+    .totals { margin-left: auto; margin-top: 16px; width: 260px; }
+    .totals td { border: 0; padding: 4px 0; }
+    .totals .final td { border-top: 2px solid #198754; color: #198754; font-size: 15px; font-weight: bold; padding-top: 8px; }
+    .notes { background: #fff; border-left: 3px solid #198754; margin-top: 18px; padding: 8px 10px; white-space: pre-line; }
+    .footer { border-top: 1px solid #e2e8f0; color: #64748b; font-size: 10px; margin-top: 28px; padding-top: 8px; text-align: center; }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="brand">
+      {% if logo_url %}<img src="{{ logo_url }}" class="logo" alt="Logo da empresa">{% endif %}
+      <div>
+        <h1>{{ empresa.nome_fantasia }}</h1>
+        <div>{{ empresa.razao_social }}</div>
+        <div>CNPJ: {{ empresa.cnpj }}</div>
+        {% if empresa.endereco %}<div>{{ empresa.endereco }}</div>{% endif %}
+        <div>{% if empresa.cidade %}{{ empresa.cidade }}{% endif %}{% if empresa.estado %}/{{ empresa.estado }}{% endif %}</div>
+        {% if empresa.telefone %}<div>Telefone: {{ empresa.telefone }}</div>{% endif %}
+        {% if empresa.email %}<div>E-mail: {{ empresa.email }}</div>{% endif %}
+      </div>
+    </div>
+    <div class="document-title">
+      <strong>Recibo de venda</strong>
+      <span class="muted">#{{ venda.pk }}</span>
+    </div>
+  </header>
+
+  <section class="grid">
+    <div class="box">
+      <dl>
+        <dt>Data da venda</dt><dd>{{ venda.data|date:"d/m/Y H:i" }}</dd>
+        <dt>Vendedor</dt><dd>{{ venda.usuario }}</dd>
+        <dt>Forma de pagamento</dt><dd>{{ venda.get_forma_pagamento_display }}</dd>
+      </dl>
+    </div>
+    <div class="box">
+      <dl>
+        <dt>Cliente</dt><dd>{{ venda.cliente|default:"Consumidor Final" }}</dd>
+        <dt>Status</dt><dd>{{ venda.get_status_display }}</dd>
+      </dl>
+    </div>
+  </section>
+
+  <h2>Produtos</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Produto</th>
+        <th class="right">Quantidade</th>
+        <th class="right">Preço unitário</th>
+        <th class="right">Desconto</th>
+        <th class="right">Subtotal</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in venda.itens.all %}
+        <tr>
+          <td>{{ item.produto.nome }}<br><span class="muted">{{ item.produto.codigo_interno }}</span></td>
+          <td class="right">{{ item.quantidade }}</td>
+          <td class="right">R$ {{ item.preco_unitario }}</td>
+          <td class="right">R$ {{ item.desconto }}</td>
+          <td class="right">R$ {{ item.subtotal }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <table class="totals">
+    <tr><td>Subtotal</td><td class="right">R$ {{ venda.subtotal }}</td></tr>
+    <tr><td>Desconto total</td><td class="right">R$ {{ venda.desconto }}</td></tr>
+    <tr class="final"><td>Total final</td><td class="right">R$ {{ venda.total }}</td></tr>
+  </table>
+
+  {% if venda.observacoes %}
+    <h2>Observações</h2>
+    <div class="notes">{{ venda.observacoes }}</div>
+  {% endif %}
+
+  <div class="footer">Recibo gerado eletronicamente pelo Sistema de Gestão Comercial Agro.</div>
+</body>
+</html>

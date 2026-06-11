@@ -1,0 +1,301 @@
+:root {
+  --primary: #198754;
+  --secondary: #8a6f2a;
+  --accent: #d9ead3;
+  --primary-fg: #ffffff;
+  --body-bg: #f4f8f1;
+  --body-fg: #1f3b2d;
+  --body-quiet-color: #5f7668;
+  --body-loud-color: #183024;
+  --header-color: #ffffff;
+  --header-branding-color: #ffffff;
+  --header-bg: #146c43;
+  --header-link-color: #f4fff8;
+  --breadcrumbs-fg: #eef8ef;
+  --breadcrumbs-link-fg: #ffffff;
+  --breadcrumbs-bg: #198754;
+  --link-fg: #146c43;
+  --link-hover-color: #0f5132;
+  --link-selected-fg: #8a6f2a;
+  --hairline-color: #d8e5da;
+  --border-color: #c7d8ca;
+  --selected-bg: #e7f4e8;
+  --selected-row: #edf7ef;
+  --button-bg: #198754;
+  --button-fg: #ffffff;
+  --button-hover-bg: #146c43;
+  --default-button-bg: #8a6f2a;
+  --default-button-hover-bg: #71591f;
+  --delete-button-bg: #b42318;
+  --delete-button-hover-bg: #8f1d14;
+  --object-tools-bg: #8a6f2a;
+  --object-tools-hover-bg: #71591f;
+  --font-family-primary: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-family-monospace: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+}
+
+html[data-theme="dark"] {
+  --primary: #4ade80;
+  --secondary: #d6b655;
+  --accent: #204c34;
+  --body-bg: #102018;
+  --body-fg: #ecfdf3;
+  --body-quiet-color: #b7c9bd;
+  --body-loud-color: #ffffff;
+  --header-bg: #0b3d26;
+  --breadcrumbs-bg: #14532d;
+  --link-fg: #86efac;
+  --link-hover-color: #bbf7d0;
+  --hairline-color: #28533a;
+  --border-color: #326344;
+  --selected-bg: #173d28;
+  --selected-row: #1f4d33;
+}
+
+body {
+  background:
+    radial-gradient(circle at top left, rgba(25, 135, 84, 0.12), transparent 32rem),
+    var(--body-bg);
+  font-family: var(--font-family-primary);
+}
+
+#container {
+  min-height: 100vh;
+}
+
+#header {
+  min-height: 4.25rem;
+  padding: 0.75rem 2rem;
+  background: linear-gradient(135deg, #0f5132 0%, #198754 62%, #8a6f2a 100%);
+  box-shadow: 0 0.75rem 1.75rem rgba(31, 59, 45, 0.16);
+}
+
+.agro-admin-branding a:link,
+.agro-admin-branding a:visited,
+#site-name a:link,
+#site-name a:visited {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.agro-admin-logo {
+  display: inline-grid;
+  width: 2.25rem;
+  height: 2.25rem;
+  place-items: center;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.18);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.24);
+  font-size: 1.2rem;
+}
+
+.agro-admin-title {
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+.agro-admin-subtitle {
+  align-self: flex-end;
+  margin-left: 0.15rem;
+  padding-left: 0.65rem;
+  border-left: 1px solid rgba(255, 255, 255, 0.35);
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 0.82rem;
+  font-weight: 600;
+  line-height: 1.2;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+#user-tools,
+#user-tools a,
+#logout-form button {
+  color: rgba(255, 255, 255, 0.92);
+}
+
+#user-tools a:hover,
+#logout-form button:hover {
+  color: #ffffff;
+  text-decoration-color: rgba(255, 255, 255, 0.65);
+}
+
+div.breadcrumbs {
+  padding: 0.85rem 2rem;
+  border: 0;
+  box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.15);
+}
+
+.main > .content,
+#content {
+  padding: 1.5rem 2rem 2.5rem;
+}
+
+#content h1 {
+  color: var(--body-loud-color);
+  font-size: clamp(1.55rem, 2vw, 2.1rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.module,
+.inline-group,
+#content-related,
+.paginator,
+fieldset.module,
+.results,
+.submit-row {
+  border: 1px solid rgba(25, 135, 84, 0.12);
+  border-radius: 1rem;
+  background: var(--body-bg);
+  box-shadow: 0 0.75rem 1.75rem rgba(31, 59, 45, 0.08);
+  overflow: hidden;
+}
+
+.module h2,
+.module caption,
+.inline-group h2,
+#content-related .module h2 {
+  padding: 0.85rem 1rem;
+  background: linear-gradient(135deg, #198754 0%, #157347 100%);
+  color: #ffffff;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+}
+
+.module table,
+.results table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+thead th {
+  background: #eef8ef;
+  color: #1f3b2d;
+  font-weight: 800;
+}
+
+html[data-theme="dark"] thead th {
+  background: #173d28;
+  color: #ecfdf3;
+}
+
+.row1 {
+  background: rgba(255, 255, 255, 0.58);
+}
+
+.row2 {
+  background: rgba(231, 244, 232, 0.72);
+}
+
+html[data-theme="dark"] .row1 {
+  background: rgba(16, 32, 24, 0.82);
+}
+
+html[data-theme="dark"] .row2 {
+  background: rgba(31, 77, 51, 0.46);
+}
+
+.object-tools a:link,
+.object-tools a:visited,
+.button,
+input[type="submit"],
+input[type="button"],
+.submit-row input,
+a.button {
+  border-radius: 999px;
+  font-weight: 700;
+  box-shadow: 0 0.35rem 0.9rem rgba(25, 135, 84, 0.18);
+}
+
+.button.default,
+input[type="submit"].default,
+.submit-row input.default {
+  box-shadow: 0 0.35rem 0.9rem rgba(138, 111, 42, 0.2);
+}
+
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="url"],
+input[type="number"],
+input[type="tel"],
+textarea,
+select,
+.vTextField {
+  border-color: #c7d8ca;
+  border-radius: 0.65rem;
+}
+
+input:focus,
+textarea:focus,
+select:focus,
+.vTextField:focus {
+  border-color: #198754;
+  box-shadow: 0 0 0 0.18rem rgba(25, 135, 84, 0.18);
+  outline: 0;
+}
+
+#nav-sidebar {
+  border-right: 1px solid rgba(25, 135, 84, 0.12);
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(10px);
+}
+
+#nav-sidebar .current-app .section:link,
+#nav-sidebar .current-app .section:visited,
+#nav-sidebar .current-model {
+  background: #e7f4e8;
+}
+
+.login #container {
+  background:
+    radial-gradient(circle at top, rgba(25, 135, 84, 0.18), transparent 28rem),
+    var(--body-bg);
+}
+
+.login #header {
+  justify-content: center;
+}
+
+.login #content {
+  max-width: 28rem;
+  margin: 2rem auto;
+}
+
+.login #content-main {
+  padding: 1.5rem;
+  border: 1px solid rgba(25, 135, 84, 0.14);
+  border-radius: 1.25rem;
+  background: var(--body-bg);
+  box-shadow: 0 1rem 2.5rem rgba(31, 59, 45, 0.12);
+}
+
+.login .form-row label {
+  color: var(--body-loud-color);
+  font-weight: 700;
+}
+
+.messagelist li {
+  border-radius: 0.85rem;
+  box-shadow: 0 0.5rem 1rem rgba(31, 59, 45, 0.08);
+}
+
+@media (max-width: 767px) {
+  #header {
+    padding: 0.75rem 1rem;
+  }
+
+  .agro-admin-subtitle {
+    display: none;
+  }
+
+  .main > .content,
+  #content {
+    padding: 1rem;
+  }
+}

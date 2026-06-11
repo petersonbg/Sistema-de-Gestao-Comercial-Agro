@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <title>Orçamento #{{ orcamento.pk }}</title>
+  <style>
+    @page { size: A4; margin: 18mm; }
+    body { color: #1f2933; font-family: Arial, Helvetica, sans-serif; font-size: 12px; line-height: 1.45; }
+    .header { align-items: flex-start; border-bottom: 2px solid #198754; display: flex; justify-content: space-between; padding-bottom: 14px; }
+    .brand { display: flex; gap: 14px; }
+    .logo { max-height: 72px; max-width: 120px; object-fit: contain; }
+    h1 { color: #198754; font-size: 22px; margin: 0 0 4px; text-transform: uppercase; }
+    h2 { font-size: 15px; margin: 22px 0 8px; }
+    .muted { color: #64748b; }
+    .document-title { text-align: right; }
+    .document-title strong { display: block; font-size: 18px; }
+    .status { background: #e8f5ee; border-radius: 999px; color: #198754; display: inline-block; font-size: 10px; font-weight: bold; margin-top: 6px; padding: 4px 9px; text-transform: uppercase; }
+    .grid { display: grid; gap: 10px; grid-template-columns: 1fr 1fr; margin-top: 18px; }
+    .box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 10px; }
+    .box dl { margin: 0; }
+    .box dt { color: #64748b; font-size: 10px; text-transform: uppercase; }
+    .box dd { margin: 0 0 6px; }
+    table { border-collapse: collapse; margin-top: 8px; width: 100%; }
+    th { background: #198754; color: #fff; font-size: 10px; padding: 8px; text-align: left; text-transform: uppercase; }
+    td { border-bottom: 1px solid #e2e8f0; padding: 8px; vertical-align: top; }
+    .right { text-align: right; }
+    .totals { margin-left: auto; margin-top: 16px; width: 260px; }
+    .totals td { border: 0; padding: 4px 0; }
+    .totals .final td { border-top: 2px solid #198754; color: #198754; font-size: 15px; font-weight: bold; padding-top: 8px; }
+    .notes { background: #fff; border-left: 3px solid #198754; margin-top: 18px; padding: 8px 10px; white-space: pre-line; }
+    .footer { border-top: 1px solid #e2e8f0; color: #64748b; font-size: 10px; margin-top: 28px; padding-top: 8px; text-align: center; }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="brand">
+      {% if logo_url %}<img src="{{ logo_url }}" class="logo" alt="Logo da empresa">{% endif %}
+      <div>
+        <h1>{{ empresa.nome_fantasia }}</h1>
+        <div>{{ empresa.razao_social }}</div>
+        <div>CNPJ: {{ empresa.cnpj }}</div>
+        {% if empresa.endereco %}<div>{{ empresa.endereco }}</div>{% endif %}
+        <div>{% if empresa.cidade %}{{ empresa.cidade }}{% endif %}{% if empresa.estado %}/{{ empresa.estado }}{% endif %}</div>
+        {% if empresa.telefone %}<div>Telefone: {{ empresa.telefone }}</div>{% endif %}
+        {% if empresa.email %}<div>E-mail: {{ empresa.email }}</div>{% endif %}
+      </div>
+    </div>
+    <div class="document-title">
+      <strong>Orçamento</strong>
+      <span class="muted">#{{ orcamento.pk }}</span><br>
+      <span class="status">{{ orcamento.get_status_display }}</span>
+    </div>
+  </header>
+
+  <section class="grid">
+    <div class="box">
+      <dl>
+        <dt>Cliente</dt><dd>{{ cliente.nome }}</dd>
+        <dt>CPF/CNPJ</dt><dd>{{ cliente.cpf_cnpj|default:"Não informado" }}</dd>
+        <dt>Telefone</dt><dd>{{ cliente.telefone|default:"Não informado" }}</dd>
+        <dt>E-mail</dt><dd>{{ cliente.email|default:"Não informado" }}</dd>
+      </dl>
+    </div>
+    <div class="box">
+      <dl>
+        <dt>Data do orçamento</dt><dd>{{ orcamento.data|date:"d/m/Y H:i" }}</dd>
+        <dt>Validade</dt><dd>{{ orcamento.validade|date:"d/m/Y" }}</dd>
+        <dt>Vendedor</dt><dd>{{ orcamento.usuario }}</dd>
+        <dt>Status</dt><dd>{{ orcamento.get_status_display }}</dd>
+      </dl>
+    </div>
+  </section>
+
+  <h2>Produtos</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Produto</th>
+        <th class="right">Quantidade</th>
+        <th class="right">Preço unitário</th>
+        <th class="right">Desconto</th>
+        <th class="right">Subtotal</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in orcamento.itens.all %}
+        <tr>
+          <td>{{ item.produto.nome }}<br><span class="muted">{{ item.produto.codigo_interno }}</span></td>
+          <td class="right">{{ item.quantidade }}</td>
+          <td class="right">R$ {{ item.preco_unitario }}</td>
+          <td class="right">R$ {{ item.desconto }}</td>
+          <td class="right">R$ {{ item.subtotal }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <table class="totals">
+    <tr><td>Subtotal</td><td class="right">R$ {{ orcamento.subtotal }}</td></tr>
+    <tr><td>Desconto total</td><td class="right">R$ {{ orcamento.desconto }}</td></tr>
+    <tr class="final"><td>Total final</td><td class="right">R$ {{ orcamento.total }}</td></tr>
+  </table>
+
+  {% if orcamento.observacoes %}
+    <h2>Observações</h2>
+    <div class="notes">{{ orcamento.observacoes }}</div>
+  {% endif %}
+
+  <div class="footer">Orçamento sujeito à disponibilidade de estoque no momento da conversão em venda.</div>
+</body>
+</html>

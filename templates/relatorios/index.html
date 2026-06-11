@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Relatórios | Sistema de Gestão Comercial Agro{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="mb-4">
+    <h1 class="h3 mb-1">Relatórios</h1>
+    <p class="text-muted mb-0">Acompanhe vendas, estoque e desempenho de produtos da sua empresa.</p>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-md-6 col-xl-4">
+      <a href="{% url 'relatorios:vendas_dia' %}" class="card border-0 shadow-sm h-100 text-decoration-none text-reset">
+        <div class="card-body"><h2 class="h5">Vendas do dia</h2><p class="text-muted mb-0">Vendas emitidas na data atual.</p></div>
+      </a>
+    </div>
+    <div class="col-md-6 col-xl-4">
+      <a href="{% url 'relatorios:vendas_periodo' %}" class="card border-0 shadow-sm h-100 text-decoration-none text-reset">
+        <div class="card-body"><h2 class="h5">Vendas por período</h2><p class="text-muted mb-0">Filtro por datas, total geral e totais por pagamento.</p></div>
+      </a>
+    </div>
+    <div class="col-md-6 col-xl-4">
+      <a href="{% url 'relatorios:estoque_baixo' %}" class="card border-0 shadow-sm h-100 text-decoration-none text-reset">
+        <div class="card-body"><h2 class="h5">Estoque baixo</h2><p class="text-muted mb-0">Produtos com saldo abaixo ou igual ao mínimo.</p></div>
+      </a>
+    </div>
+    <div class="col-md-6 col-xl-4">
+      <a href="{% url 'relatorios:proximos_vencimento' %}" class="card border-0 shadow-sm h-100 text-decoration-none text-reset">
+        <div class="card-body"><h2 class="h5">Próximos do vencimento</h2><p class="text-muted mb-0">Lotes que vencem em até 90 dias.</p></div>
+      </a>
+    </div>
+    <div class="col-md-6 col-xl-4">
+      <a href="{% url 'relatorios:vencidos' %}" class="card border-0 shadow-sm h-100 text-decoration-none text-reset">
+        <div class="card-body"><h2 class="h5">Produtos vencidos</h2><p class="text-muted mb-0">Lotes vencidos ainda com saldo.</p></div>
+      </a>
+    </div>
+    <div class="col-md-6 col-xl-4">
+      <a href="{% url 'relatorios:mais_vendidos' %}" class="card border-0 shadow-sm h-100 text-decoration-none text-reset">
+        <div class="card-body"><h2 class="h5">Produtos mais vendidos</h2><p class="text-muted mb-0">Ranking por quantidade e valor vendido.</p></div>
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}

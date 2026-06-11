@@ -1,0 +1,21 @@
+{% extends "admin/base.html" %}
+{% load i18n static %}
+
+{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | {{ site_title|default:_('Sistema de Gestão Comercial Agro') }}{% endblock %}
+
+{% block extrastyle %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/admin_agro.css' %}">{% endblock %}
+
+{% block branding %}
+<div id="site-name" class="agro-admin-branding">
+  <a href="{% url 'admin:index' %}" aria-label="Administração do Sistema de Gestão Comercial Agro">
+    <span class="agro-admin-logo" aria-hidden="true">🌱</span>
+    <span class="agro-admin-title">Gestão Agro</span>
+    <span class="agro-admin-subtitle">Administração</span>
+  </a>
+</div>
+{% if user.is_anonymous %}
+  {% include "admin/color_theme_toggle.html" %}
+{% endif %}
+{% endblock %}
+
+{% block nav-global %}{% endblock %}

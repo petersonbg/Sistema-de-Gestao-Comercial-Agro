@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}Orçamentos | Sistema de Gestão Comercial Agro{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="d-flex flex-column flex-md-row justify-content-between gap-3 align-items-md-center mb-4">
+    <div>
+      <h1 class="h3 mb-1">Orçamentos</h1>
+      <p class="text-muted mb-0">Consulte orçamentos por status e cliente.</p>
+    </div>
+    <a href="{% url 'orcamentos:create' %}" class="btn btn-success">Novo orçamento</a>
+  </div>
+
+  <form method="get" class="card border-0 shadow-sm mb-4">
+    <div class="card-body row g-3 align-items-end">
+      <div class="col-md-4">
+        <label class="form-label" for="{{ filtro_form.status.id_for_label }}">{{ filtro_form.status.label }}</label>
+        {{ filtro_form.status }}
+      </div>
+      <div class="col-md-6">
+        <label class="form-label" for="{{ filtro_form.cliente.id_for_label }}">{{ filtro_form.cliente.label }}</label>
+        {{ filtro_form.cliente }}
+      </div>
+      <div class="col-md-2 d-grid">
+        <button type="submit" class="btn btn-outline-success">Filtrar</button>
+      </div>
+    </div>
+  </form>
+
+  <div class="card border-0 shadow-sm">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>#</th>
+            <th>Cliente</th>
+            <th>Validade</th>
+            <th>Status</th>
+            <th class="text-end">Total</th>
+            <th class="text-end">Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for orcamento in orcamentos %}
+            <tr>
+              <td>{{ orcamento.pk }}</td>
+              <td>{{ orcamento.cliente }}</td>
+              <td>{{ orcamento.validade|date:"d/m/Y" }}</td>
+              <td>{{ orcamento.get_status_display }}</td>
+              <td class="text-end">R$ {{ orcamento.total }}</td>
+              <td class="text-end"><a href="{% url 'orcamentos:detail' orcamento.pk %}" class="btn btn-sm btn-outline-success">Detalhes</a></td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="6" class="text-center text-muted py-4">Nenhum orçamento encontrado.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

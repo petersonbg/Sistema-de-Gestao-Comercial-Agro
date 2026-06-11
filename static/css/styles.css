@@ -1,0 +1,48 @@
+:root {
+  --agro-green: #198754;
+  --agro-dark: #1f3b2d;
+  --agro-light: #f4f8f1;
+}
+
+body {
+  background: var(--agro-light);
+  color: var(--agro-dark);
+}
+
+.hero-card {
+  background: linear-gradient(135deg, #146c43 0%, #198754 55%, #8a6f2a 100%);
+}
+
+.module-card {
+  border: 0;
+  box-shadow: 0 0.5rem 1rem rgba(31, 59, 45, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.module-card:hover,
+.module-card:focus {
+  box-shadow: 0 0.75rem 1.5rem rgba(31, 59, 45, 0.14);
+  transform: translateY(-2px);
+}
+
+input[type="text"],
+input[type="password"],
+input[type="email"] {
+  display: block;
+  width: 100%;
+  padding: 0.375rem 0.75rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #212529;
+  background-color: #fff;
+  border: 1px solid #ced4da;
+  border-radius: 0.375rem;
+}
+
+.dashboard-stat {
+  min-height: 11rem;
+}
+
+.login-card {
+  margin-top: 2rem;
+}
