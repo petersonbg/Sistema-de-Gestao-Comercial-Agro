@@ -6,25 +6,26 @@ from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
-from core.crud_mixins import EmpresaObrigatoriaMixin
+from core.crud_mixins import EmpresaObrigatoriaBaseMixin, EmpresaObrigatoriaMixin
+from core.permissions import AdministradorRequiredMixin, GerenteOuAdministradorRequiredMixin
 
 from .forms import CategoriaForm, MarcaForm, ProdutoForm
-from .models import Categoria, Marca, Produto
+from .models import CategoriaProduto, Marca, Produto
 
 
-class CategoriaQuerysetMixin(EmpresaObrigatoriaMixin):
+class CategoriaQuerysetMixin(EmpresaObrigatoriaBaseMixin):
     """Restringe categorias à empresa do usuário logado."""
 
-    model = Categoria
+    model = CategoriaProduto
 
     def get_queryset(self):
-        return Categoria.objects.filter(empresa=self.get_empresa())
+        return CategoriaProduto.objects.filter(empresa=self.get_empresa())
 
 
-class CategoriaListView(CategoriaQuerysetMixin, ListView):
+class CategoriaListView(CategoriaQuerysetMixin, GerenteOuAdministradorRequiredMixin, ListView):
     """Lista categorias com busca e paginação."""
 
-    template_name = "produtos/categoria_list.html"
+    template_name = "administracao/categorias_produtos/lista.html"
     context_object_name = "categorias"
     paginate_by = 10
 
@@ -48,18 +49,18 @@ class CategoriaListView(CategoriaQuerysetMixin, ListView):
         return context
 
 
-class CategoriaDetailView(CategoriaQuerysetMixin, DetailView):
+class CategoriaDetailView(CategoriaQuerysetMixin, GerenteOuAdministradorRequiredMixin, DetailView):
     """Exibe detalhes da categoria."""
 
-    template_name = "produtos/categoria_detail.html"
+    template_name = "administracao/categorias_produtos/detalhe.html"
     context_object_name = "categoria"
 
 
-class CategoriaCreateView(CategoriaQuerysetMixin, CreateView):
+class CategoriaCreateView(CategoriaQuerysetMixin, AdministradorRequiredMixin, CreateView):
     """Cadastra categorias na empresa do usuário logado."""
 
     form_class = CategoriaForm
-    template_name = "produtos/categoria_form.html"
+    template_name = "administracao/categorias_produtos/form.html"
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -79,11 +80,11 @@ class CategoriaCreateView(CategoriaQuerysetMixin, CreateView):
         return reverse_lazy("produtos:categoria_detail", kwargs={"pk": self.object.pk})
 
 
-class CategoriaUpdateView(CategoriaQuerysetMixin, UpdateView):
+class CategoriaUpdateView(CategoriaQuerysetMixin, AdministradorRequiredMixin, UpdateView):
     """Edita categorias da empresa do usuário logado."""
 
     form_class = CategoriaForm
-    template_name = "produtos/categoria_form.html"
+    template_name = "administracao/categorias_produtos/form.html"
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -102,7 +103,7 @@ class CategoriaUpdateView(CategoriaQuerysetMixin, UpdateView):
         return reverse_lazy("produtos:categoria_detail", kwargs={"pk": self.object.pk})
 
 
-class CategoriaInativarView(CategoriaQuerysetMixin, View):
+class CategoriaInativarView(CategoriaQuerysetMixin, AdministradorRequiredMixin, View):
     """Inativa categorias em vez de removê-las definitivamente."""
 
     def post(self, request, *args, **kwargs):
@@ -241,6 +242,7 @@ class ProdutoListView(ProdutoQuerysetMixin, ListView):
         busca = self.request.GET.get("q", "").strip()
         status = self.request.GET.get("status", "").strip()
         tipo_controle = self.request.GET.get("tipo_controle", "").strip()
+        categoria_id = self.request.GET.get("categoria", "").strip()
 
         if busca:
             queryset = queryset.filter(
@@ -260,6 +262,8 @@ class ProdutoListView(ProdutoQuerysetMixin, ListView):
             queryset = queryset.filter(ativo=False)
         if tipo_controle:
             queryset = queryset.filter(tipo_controle_estoque=tipo_controle)
+        if categoria_id.isdigit():
+            queryset = queryset.filter(categoria_id=categoria_id)
         return queryset
 
     def get_context_data(self, **kwargs):
@@ -267,7 +271,9 @@ class ProdutoListView(ProdutoQuerysetMixin, ListView):
         context["busca"] = self.request.GET.get("q", "")
         context["status"] = self.request.GET.get("status", "")
         context["tipo_controle"] = self.request.GET.get("tipo_controle", "")
+        context["categoria_selecionada"] = self.request.GET.get("categoria", "")
         context["tipos_controle"] = Produto.TipoControleEstoque.choices
+        context["categorias"] = CategoriaProduto.objects.filter(empresa=self.get_empresa())
         return context
 
 

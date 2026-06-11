@@ -10,7 +10,7 @@
       <p class="text-muted mb-0">Cadastro único de produtos com controle simples, por lote ou por unidade identificada.</p>
     </div>
     <div class="d-flex flex-wrap gap-2">
-      <a href="{% url 'produtos:categoria_list' %}" class="btn btn-outline-secondary">Categorias</a>
+      {% if user.is_superuser or user.perfil == 'administrador' or user.perfil == 'gerente' %}<a href="{% url 'produtos:categoria_list' %}" class="btn btn-outline-secondary">Categorias</a>{% endif %}
       <a href="{% url 'produtos:marca_list' %}" class="btn btn-outline-secondary">Marcas</a>
       <a href="{% url 'produtos:produto_create' %}" class="btn btn-success">Novo produto</a>
     </div>
@@ -19,11 +19,18 @@
   <form method="get" class="card border-0 shadow-sm mb-4">
     <div class="card-body">
       <div class="row g-3 align-items-end">
-        <div class="col-lg-5">
+        <div class="col-lg-4">
           <label for="q" class="form-label">Busca</label>
           <input type="search" class="form-control" id="q" name="q" value="{{ busca }}" placeholder="Nome, código interno, código de barras, chassi, BNDES, MDA, NCM, categoria ou marca">
         </div>
-        <div class="col-md-3 col-lg-3">
+        <div class="col-md-4 col-lg-2">
+          <label for="categoria" class="form-label">Categoria</label>
+          <select class="form-select" id="categoria" name="categoria">
+            <option value="">Todas</option>
+            {% for categoria in categorias %}<option value="{{ categoria.pk }}" {% if categoria_selecionada == categoria.pk|stringformat:'s' %}selected{% endif %}>{{ categoria.nome }}</option>{% endfor %}
+          </select>
+        </div>
+        <div class="col-md-4 col-lg-2">
           <label for="tipo_controle" class="form-label">Tipo de controle</label>
           <select class="form-select" id="tipo_controle" name="tipo_controle">
             <option value="" {% if not tipo_controle %}selected{% endif %}>Todos</option>
@@ -32,7 +39,7 @@
             {% endfor %}
           </select>
         </div>
-        <div class="col-md-3 col-lg-2">
+        <div class="col-md-4 col-lg-2">
           <label for="status" class="form-label">Status</label>
           <select class="form-select" id="status" name="status">
             <option value="" {% if not status %}selected{% endif %}>Todos</option>
@@ -69,7 +76,7 @@
               <td class="fw-semibold">{{ produto.nome }}</td>
               <td>{{ produto.codigo_interno }}</td>
               <td>{{ produto.codigo_barras|default:"-" }}</td>
-              <td>{{ produto.chassi|default:"-" }}</td>
+              <td>{% if produto.categoria.tipo == 'VEICULOS' %}{{ produto.chassi|default:"-" }}{% else %}<span class="text-muted">—</span>{% endif %}</td>
               <td>{{ produto.ncm|default:"-" }}</td>
               <td>{{ produto.categoria }}</td>
               <td>{{ produto.get_tipo_controle_estoque_display }}</td>
@@ -91,9 +98,9 @@
 
   {% if is_paginated %}
     <nav class="mt-4" aria-label="Paginação de produtos"><ul class="pagination justify-content-center">
-      {% if page_obj.has_previous %}<li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}&q={{ busca }}&status={{ status }}&tipo_controle={{ tipo_controle }}">Anterior</a></li>{% else %}<li class="page-item disabled"><span class="page-link">Anterior</span></li>{% endif %}
+      {% if page_obj.has_previous %}<li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}&q={{ busca }}&status={{ status }}&tipo_controle={{ tipo_controle }}&categoria={{ categoria_selecionada }}">Anterior</a></li>{% else %}<li class="page-item disabled"><span class="page-link">Anterior</span></li>{% endif %}
       <li class="page-item active"><span class="page-link">{{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span></li>
-      {% if page_obj.has_next %}<li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}&q={{ busca }}&status={{ status }}&tipo_controle={{ tipo_controle }}">Próxima</a></li>{% else %}<li class="page-item disabled"><span class="page-link">Próxima</span></li>{% endif %}
+      {% if page_obj.has_next %}<li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}&q={{ busca }}&status={{ status }}&tipo_controle={{ tipo_controle }}&categoria={{ categoria_selecionada }}">Próxima</a></li>{% else %}<li class="page-item disabled"><span class="page-link">Próxima</span></li>{% endif %}
     </ul></nav>
   {% endif %}
 </div>

@@ -6,18 +6,25 @@ from django.db.models import Q
 CODIGO_INTERNO_PREFIXO = "PROD"
 
 
-class Categoria(models.Model):
-    """Categoria de produtos por empresa."""
+class CategoriaProduto(models.Model):
+    """Categoria usada para classificar produtos de uma empresa."""
+
+    class Tipo(models.TextChoices):
+        GERAL = "GERAL", "Geral"
+        VEICULOS = "VEICULOS", "Veículos"
 
     empresa = models.ForeignKey("empresas.Empresa", on_delete=models.CASCADE, related_name="categorias")
     nome = models.CharField(max_length=100)
     descricao = models.TextField(blank=True)
+    tipo = models.CharField(max_length=10, choices=Tipo.choices, default=Tipo.GERAL)
     ativo = models.BooleanField(default=True)
+    criado_em = models.DateTimeField(auto_now_add=True)
+    atualizado_em = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ["nome"]
-        verbose_name = "categoria"
-        verbose_name_plural = "categorias"
+        verbose_name = "categoria de produto"
+        verbose_name_plural = "categorias de produtos"
         constraints = [
             models.UniqueConstraint(fields=["empresa", "nome"], name="uniq_categoria_nome_por_empresa")
         ]
@@ -77,7 +84,7 @@ class Produto(models.Model):
         UNIDADE = "unidade", "Unidade"
 
     empresa = models.ForeignKey("empresas.Empresa", on_delete=models.CASCADE, related_name="produtos")
-    categoria = models.ForeignKey("produtos.Categoria", on_delete=models.PROTECT, related_name="produtos")
+    categoria = models.ForeignKey("produtos.CategoriaProduto", on_delete=models.PROTECT, related_name="produtos")
     marca = models.ForeignKey(
         "produtos.Marca",
         on_delete=models.PROTECT,
@@ -89,7 +96,7 @@ class Produto(models.Model):
     descricao = models.TextField(blank=True)
     codigo_interno = models.CharField(max_length=50, blank=True)
     codigo_barras = models.CharField(max_length=50, blank=True, null=True)
-    chassi = models.CharField(max_length=100, blank=True)
+    chassi = models.CharField("Chassi", max_length=50, blank=True, null=True)
     codigo_bndes = models.CharField(max_length=50, blank=True)
     codigo_mda = models.CharField(max_length=50, blank=True)
     ncm = models.CharField(max_length=10, blank=True)
@@ -128,7 +135,7 @@ class Produto(models.Model):
             ),
             models.UniqueConstraint(
                 fields=["empresa", "chassi"],
-                condition=~Q(chassi=""),
+                condition=Q(chassi__isnull=False) & ~Q(chassi=""),
                 name="uniq_produto_chassi_por_empresa",
             ),
             models.CheckConstraint(check=Q(preco_custo__gte=0), name="produto_preco_custo_gte_0"),
@@ -158,7 +165,27 @@ class Produto(models.Model):
         self.codigo_interno = (self.codigo_interno or "").strip()
         if not self.codigo_interno and self.empresa_id:
             self.codigo_interno = self.gerar_codigo_interno(self.empresa_id)
+
+        categoria_tipo = None
+        if self.categoria_id:
+            categoria = getattr(self, "categoria", None)
+            categoria_tipo = getattr(categoria, "tipo", None)
+            if categoria_tipo is None:
+                categoria_tipo = CategoriaProduto.objects.filter(pk=self.categoria_id).values_list("tipo", flat=True).first()
+
+        if categoria_tipo == CategoriaProduto.Tipo.VEICULOS:
+            self.chassi = (self.chassi or "").strip().upper() or None
+        else:
+            self.chassi = None
+
+        update_fields = kwargs.get("update_fields")
+        if update_fields is not None:
+            kwargs["update_fields"] = set(update_fields) | {"chassi"}
         super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.codigo_interno} - {self.nome}"
+
+
+# Compatibilidade temporária com integrações que ainda importam o nome antigo.
+Categoria = CategoriaProduto

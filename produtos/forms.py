@@ -5,18 +5,20 @@ from django import forms
 from django.db.models import Q
 from django.core.exceptions import ValidationError
 
-from .models import Categoria, Marca, Produto
+from .models import CategoriaProduto, Marca, Produto
 
 
 class CategoriaForm(forms.ModelForm):
     """Formulário de cadastro e edição de categorias."""
 
     class Meta:
-        model = Categoria
-        fields = ("nome", "descricao")
+        model = CategoriaProduto
+        fields = ("nome", "descricao", "tipo", "ativo")
         widgets = {
             "nome": forms.TextInput(attrs={"class": "form-control", "autofocus": True}),
             "descricao": forms.Textarea(attrs={"class": "form-control", "rows": 4}),
+            "tipo": forms.Select(attrs={"class": "form-select"}),
+            "ativo": forms.CheckboxInput(attrs={"class": "form-check-input"}),
         }
 
     def __init__(self, *args, empresa=None, **kwargs):
@@ -25,7 +27,7 @@ class CategoriaForm(forms.ModelForm):
 
     def clean_nome(self):
         nome = self.cleaned_data.get("nome", "").strip()
-        queryset = Categoria.objects.filter(empresa=self.empresa, nome__iexact=nome)
+        queryset = CategoriaProduto.objects.filter(empresa=self.empresa, nome__iexact=nome)
         if self.instance.pk:
             queryset = queryset.exclude(pk=self.instance.pk)
         if self.empresa and queryset.exists():
@@ -106,7 +108,7 @@ class ProdutoForm(forms.ModelForm):
     def __init__(self, *args, empresa=None, **kwargs):
         self.empresa = empresa
         super().__init__(*args, **kwargs)
-        categorias = Categoria.objects.filter(empresa=empresa)
+        categorias = CategoriaProduto.objects.filter(empresa=empresa)
         marcas = Marca.objects.filter(empresa=empresa)
         if self.instance.pk:
             categorias = categorias.filter(Q(ativo=True) | Q(pk=self.instance.categoria_id))
@@ -116,6 +118,8 @@ class ProdutoForm(forms.ModelForm):
             marcas = marcas.filter(ativo=True)
 
         self.fields["categoria"].queryset = categorias
+        ids_veiculos = categorias.filter(tipo=CategoriaProduto.Tipo.VEICULOS).values_list("pk", flat=True)
+        self.fields["categoria"].widget.attrs["data-categorias-veiculos"] = ",".join(map(str, ids_veiculos))
         self.fields["marca"].queryset = marcas
         self.fields["marca"].required = False
         self.fields["unidade_referencia"].required = False
@@ -134,9 +138,13 @@ class ProdutoForm(forms.ModelForm):
         return codigo_barras
 
     def clean_chassi(self):
+        categoria = self.cleaned_data.get("categoria")
+        if not categoria or categoria.tipo != CategoriaProduto.Tipo.VEICULOS:
+            return None
+
         chassi = (self.cleaned_data.get("chassi") or "").strip().upper()
         if not chassi:
-            return ""
+            return None
 
         queryset = Produto.objects.filter(empresa=self.empresa, chassi=chassi)
         if self.instance.pk:

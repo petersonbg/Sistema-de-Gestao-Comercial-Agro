@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}{% if object %}Editar{% else %}Nova{% endif %} Categoria de Produto | Administração{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <span class="text-success fw-semibold text-uppercase small">Administração</span>
+      <h1 class="h3 mb-1">{% if object %}Editar categoria{% else %}Nova categoria de produto{% endif %}</h1>
+      <p class="text-muted mb-0">Categorias do tipo Veículos habilitam o campo Chassi nos produtos.</p>
+    </div>
+    <a href="{% url 'produtos:categoria_list' %}" class="btn btn-outline-secondary">Voltar</a>
+  </div>
+
+  <form method="post" class="card border-0 shadow-sm" novalidate>
+    {% csrf_token %}
+    <div class="card-body">
+      {% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}
+      <div class="row g-3">
+        <div class="col-md-7"><label for="{{ form.nome.id_for_label }}" class="form-label">{{ form.nome.label }}</label>{{ form.nome }}{% for error in form.nome.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}</div>
+        <div class="col-md-5"><label for="{{ form.tipo.id_for_label }}" class="form-label">{{ form.tipo.label }}</label>{{ form.tipo }}{% for error in form.tipo.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}</div>
+        <div class="col-12"><label for="{{ form.descricao.id_for_label }}" class="form-label">{{ form.descricao.label }}</label>{{ form.descricao }}{% for error in form.descricao.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}</div>
+        <div class="col-12"><div class="form-check">{{ form.ativo }}<label for="{{ form.ativo.id_for_label }}" class="form-check-label">Categoria ativa</label></div>{% for error in form.ativo.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}</div>
+      </div>
+    </div>
+    <div class="card-footer bg-white d-flex justify-content-end gap-2">
+      <a href="{% if object %}{% url 'produtos:categoria_detail' object.pk %}{% else %}{% url 'produtos:categoria_list' %}{% endif %}" class="btn btn-outline-secondary">Cancelar</a>
+      <button type="submit" class="btn btn-success">Salvar</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

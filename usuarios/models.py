@@ -8,7 +8,9 @@ class Usuario(AbstractUser):
 
     class Perfil(models.TextChoices):
         ADMINISTRADOR = "administrador", "Administrador"
+        GERENTE = "gerente", "Gerente"
         VENDEDOR = "vendedor", "Vendedor"
+        ESTOQUISTA = "estoquista", "Estoquista"
 
     empresa = models.ForeignKey(
         "empresas.Empresa",

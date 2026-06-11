@@ -5,7 +5,9 @@ from django.core.exceptions import PermissionDenied
 
 
 PERFIL_ADMINISTRADOR = "administrador"
+PERFIL_GERENTE = "gerente"
 PERFIL_VENDEDOR = "vendedor"
+PERFIL_ESTOQUISTA = "estoquista"
 
 
 def usuario_tem_perfil(user, perfis):
@@ -50,6 +52,12 @@ class AdministradorRequiredMixin(PerfilRequiredMixin):
     """Mixin para views acessíveis apenas por administradores."""
 
     perfis_permitidos = (PERFIL_ADMINISTRADOR,)
+
+
+class GerenteOuAdministradorRequiredMixin(PerfilRequiredMixin):
+    """Permite visualização administrativa a gerentes e administradores."""
+
+    perfis_permitidos = (PERFIL_ADMINISTRADOR, PERFIL_GERENTE)
 
 
 class VendedorOuAdministradorRequiredMixin(PerfilRequiredMixin):

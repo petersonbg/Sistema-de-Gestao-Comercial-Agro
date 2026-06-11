@@ -29,9 +29,19 @@
               <li class="nav-item"><a class="nav-link" href="{% url 'estoque:entrada' %}">Estoque</a></li>
               <li class="nav-item"><a class="nav-link" href="#">Financeiro</a></li>
               <li class="nav-item"><a class="nav-link" href="{% url 'relatorios:index' %}">Relatórios</a></li>
-              {% if user.is_staff %}
-                <li class="nav-item"><a class="nav-link" href="{% url 'admin:index' %}">Admin</a></li>
-              {% endif %}
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Administração</a>
+                <ul class="dropdown-menu dropdown-menu-end">
+                  <li><a class="dropdown-item" href="{% url 'produtos:categoria_list' %}">Categorias de Produtos</a></li>
+                  {% if user.is_staff %}<li><hr class="dropdown-divider"></li><li><a class="dropdown-item" href="{% url 'admin:index' %}">Admin Django</a></li>{% endif %}
+                </ul>
+              </li>
+            {% endif %}
+            {% if user.perfil == 'gerente' %}
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Administração</a>
+                <ul class="dropdown-menu dropdown-menu-end"><li><a class="dropdown-item" href="{% url 'produtos:categoria_list' %}">Categorias de Produtos</a></li>{% if user.is_staff %}<li><hr class="dropdown-divider"></li><li><a class="dropdown-item" href="{% url 'admin:index' %}">Admin Django</a></li>{% endif %}</ul>
+              </li>
             {% endif %}
           </ul>
         {% else %}
@@ -66,5 +76,6 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="{% static 'js/main.js' %}"></script>
+  {% block extra_js %}{% endblock %}
 </body>
 </html>

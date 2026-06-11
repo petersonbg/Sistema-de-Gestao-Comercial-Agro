@@ -1,5 +1,5 @@
 """Permissões reutilizáveis para o Django Admin."""
-from .permissions import PERFIL_ADMINISTRADOR, PERFIL_VENDEDOR
+from .permissions import PERFIL_ADMINISTRADOR, PERFIL_GERENTE, PERFIL_VENDEDOR
 
 
 class AdminPerfilMixin:
@@ -37,3 +37,22 @@ class AdminComercialMixin(AdminPerfilMixin):
     """Permite acesso comercial no admin a administradores, vendedores e superusuários."""
 
     perfis_permitidos = (PERFIL_ADMINISTRADOR, PERFIL_VENDEDOR)
+
+
+class AdminCategoriaProdutoMixin(AdminPerfilMixin):
+    """Administrador edita categorias; gerente possui acesso somente para leitura."""
+
+    perfis_permitidos = (PERFIL_ADMINISTRADOR, PERFIL_GERENTE)
+
+    def usuario_pode_editar(self, request):
+        user = request.user
+        return user.is_superuser or getattr(user, "perfil", None) == PERFIL_ADMINISTRADOR
+
+    def has_add_permission(self, request):
+        return self.usuario_pode_editar(request)
+
+    def has_change_permission(self, request, obj=None):
+        return self.usuario_pode_editar(request)
+
+    def has_delete_permission(self, request, obj=None):
+        return self.usuario_pode_editar(request)
